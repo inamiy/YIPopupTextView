@@ -98,7 +98,7 @@
 @implementation YIPopupTextView
 
 @dynamic delegate;
-@synthesize closeButton = _closeButton;
+@synthesize showCloseButton = _showCloseButton;
 
 - (id)initWithPlaceHolder:(NSString*)placeHolder maxCount:(NSUInteger)maxCount
 {
@@ -124,6 +124,8 @@
         self.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
         self.font = [UIFont systemFontOfSize:TEXT_SIZE];
         self.keyboardAppearance = UIKeyboardAppearanceAlert;
+        self.autocorrectionType = UITextAutocorrectionTypeNo;
+        self.autocapitalizationType = UITextAutocapitalizationTypeNone;
         self.layer.cornerRadius = 10;
         self.backgroundColor = [UIColor whiteColor];
         [_popupView addSubview:self];
@@ -161,6 +163,8 @@
         _closeButton.autoresizingMask = UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleBottomMargin;
         [_popupView addSubview:_closeButton];
         
+        self.showCloseButton = YES;
+        
     }
     return self;
 }
@@ -174,6 +178,16 @@
 #if !IS_ARC
     [super dealloc];
 #endif
+}
+
+#pragma mark -
+
+#pragma mark Accessors
+
+- (void)setShowCloseButton:(BOOL)showCloseButton
+{
+    _showCloseButton = showCloseButton;
+    _closeButton.hidden = !showCloseButton;
 }
 
 #pragma mark -

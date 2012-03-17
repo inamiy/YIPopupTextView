@@ -32,7 +32,7 @@
 }
 
 @property (nonatomic, assign) id <YIPopupTextViewDelegate> delegate;
-@property (nonatomic, retain) UIButton* closeButton;
+@property (nonatomic, assign) BOOL showCloseButton;
 
 - (id)initWithPlaceHolder:(NSString*)placeHolder maxCount:(NSUInteger)maxCount;
 - (void)showInView:(UIView*)view;
