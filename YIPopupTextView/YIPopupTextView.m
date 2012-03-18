@@ -344,11 +344,13 @@
         
     } completion:^(BOOL finished) {
         
-        if ([self.delegate respondsToSelector:@selector(popupTextView:didDismissWithText:)]) {
-            [self.delegate popupTextView:self didDismissWithText:self.text];
+        if (finished) {
+            if ([self.delegate respondsToSelector:@selector(popupTextView:didDismissWithText:)]) {
+                [self.delegate popupTextView:self didDismissWithText:self.text];
+            }
+            
+            [_backgroundView removeFromSuperview];
         }
-        
-        [_backgroundView removeFromSuperview];
         
     }];
 }
