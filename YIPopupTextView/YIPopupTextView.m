@@ -350,6 +350,8 @@
             }
             
             [_backgroundView removeFromSuperview];
+            _backgroundView = nil;
+            _popupView = nil;
         }
         
     }];
