@@ -84,18 +84,43 @@
 ////////////////////////////////////////////////////////////////////////////////
 #pragma mark -
 
+typedef enum {
+    CaretShiftDirectionNone,
+    CaretShiftDirectionLeft,
+    CaretShiftDirectionRight,
+} CaretShiftDirection;
 
-@interface YIPopupTextView ()
+
+@interface YIPopupTextView () <UIGestureRecognizerDelegate>
 
 - (void)updateCount;
 
 - (void)startObservingNotifications;
 - (void)stopObservingNotifications;
 
+- (void)startCaretShiftTimer;
+- (void)stopCaretShiftTimer;
+- (void)shiftCaret;
+
 @end
 
 
 @implementation YIPopupTextView
+{
+    NSUInteger  _maxCount;
+    
+    UIView*     _backgroundView;
+    UIView*     _popupView;
+    UILabel*    _countLabel;
+    UIButton*   _closeButton;
+    
+    BOOL        _shouldAnimate;
+    
+    UIPanGestureRecognizer* _panGesture;
+    CGPoint                 _panStartLocation;
+    NSTimer*                _caretShiftTimer;
+    CaretShiftDirection     _caretShiftDirection;
+}
 
 @dynamic delegate;
 @synthesize showCloseButton = _showCloseButton;
@@ -188,6 +213,30 @@
 {
     _showCloseButton = showCloseButton;
     _closeButton.hidden = !showCloseButton;
+}
+
+- (BOOL)caretShiftGestureEnabled
+{
+    return !!_panGesture;
+}
+
+- (void)setCaretShiftGestureEnabled:(BOOL)caretShiftGestureEnabled
+{
+    if (caretShiftGestureEnabled) {
+        if (!_panGesture) {
+            _panGesture = [[UIPanGestureRecognizer alloc] initWithTarget:self action:@selector(handlePanGesture:)];
+//            _panGesture.delegate = self;
+//            [self addGestureRecognizer:_panGesture];
+            [_backgroundView addGestureRecognizer:_panGesture];
+        }
+    }
+    else {
+        if (_panGesture) {
+            [_backgroundView removeGestureRecognizer:_panGesture];
+            _panGesture = nil;
+        }
+    }
+    
 }
 
 #pragma mark -
@@ -386,6 +435,136 @@
 - (void)handleCloseButton:(UIButton*)sender
 {
     [self dismiss];
+}
+
+#pragma mark 
+
+#pragma mark Gestures
+
+- (void)handlePanGesture:(UIPanGestureRecognizer*)gesture
+{
+    if (self.dragging || self.decelerating) {
+        [self stopCaretShiftTimer];
+        return;
+    }
+    
+    switch (gesture.state) {
+        case UIGestureRecognizerStateBegan:
+        {
+            CGPoint translation = [gesture translationInView:gesture.view];
+            if (translation.x > 0) {
+                _caretShiftDirection = CaretShiftDirectionRight;
+            }
+            else if (translation.x < 0) {
+                _caretShiftDirection = CaretShiftDirectionLeft;
+            }
+            else {
+                _caretShiftDirection = CaretShiftDirectionNone;
+            }
+            
+            if (_caretShiftDirection != CaretShiftDirectionNone) {
+                _panStartLocation = [gesture locationInView:gesture.view];
+                [self shiftCaret];
+            }
+            
+            [self performSelector:@selector(startCaretShiftTimer) withObject:nil afterDelay:0.5];
+            
+            break;
+        }
+        case UIGestureRecognizerStateChanged:
+            
+            if (_caretShiftTimer) {
+                CGPoint velocity = [gesture velocityInView:gesture.view];
+                //CGPoint translation = [gesture velocityInView:gesture.view];
+                if (velocity.x > 0) {
+                    _caretShiftDirection = CaretShiftDirectionRight;
+                }
+                else if (velocity.x < 0) {
+                    _caretShiftDirection = CaretShiftDirectionLeft;
+                }
+            }
+            
+            break;
+            
+        case UIGestureRecognizerStateEnded:
+        case UIGestureRecognizerStateCancelled:
+            
+            [self stopCaretShiftTimer];
+            break;
+            
+        default:
+            break;
+    }
+}
+
+//- (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherGestureRecognizer
+//{
+//    // recognize textView's scrolling gesture if _panGesture is vertically panning
+//    if (gestureRecognizer == _panGesture && [_panGesture translationInView:_panGesture.view].x == 0.0) {
+//        
+//        return YES;
+//    }
+//    
+//    return NO;
+//}
+
+#pragma mark -
+
+#pragma mark Timers
+
+- (void)startCaretShiftTimer
+{
+    if (!_caretShiftTimer) {
+        _caretShiftTimer = [NSTimer scheduledTimerWithTimeInterval:0.1 target:self selector:@selector(shiftCaret) userInfo:nil repeats:YES];
+    }
+}
+
+- (void)stopCaretShiftTimer
+{
+    [NSObject cancelPreviousPerformRequestsWithTarget:self selector:@selector(startCaretShiftTimer) object:nil];
+    
+    [_caretShiftTimer invalidate];
+    _caretShiftTimer = nil;
+    
+    _caretShiftDirection = CaretShiftDirectionNone;
+    _panStartLocation = CGPointZero;
+}
+
+- (void)shiftCaret
+{
+    NSRange range = self.selectedRange;
+    if (range.length == 0) {
+        if (_caretShiftDirection == CaretShiftDirectionRight && range.location < self.text.length) {
+            range.location += 1;
+        }
+        else if (_caretShiftDirection == CaretShiftDirectionLeft && range.location > 0) {
+            range.location -= 1;
+        }
+    }
+    else {
+        // right caret
+        if (_panStartLocation.x > _panGesture.view.frame.size.width/2) {
+            if (_caretShiftDirection == CaretShiftDirectionRight && range.location+range.length < self.text.length) {
+                range.length += 1;
+            }
+            else if (_caretShiftDirection == CaretShiftDirectionLeft && range.length > 0) {
+                range.length -= 1;
+            }
+        }
+        // left caret
+        else {
+            if (_caretShiftDirection == CaretShiftDirectionRight && range.length > 0) {
+                range.location +=1;
+                range.length -= 1;
+            }
+            else if (_caretShiftDirection == CaretShiftDirectionLeft && range.location > 0) {
+                range.location -=1;
+                range.length += 1;
+            }
+        }
+    }
+    
+    self.selectedRange = range;
 }
 
 @end

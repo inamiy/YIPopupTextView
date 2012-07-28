@@ -72,9 +72,19 @@
     // NOTE: maxCount = 0 to hide count
     YIPopupTextView* popupTextView = [[YIPopupTextView alloc] initWithPlaceHolder:@"input here" maxCount:300];
     popupTextView.delegate = self;
-    //popupTextView.closeButton.hidden = YES;
+    popupTextView.showCloseButton = YES;
+    popupTextView.caretShiftGestureEnabled = YES;   // default = NO
     popupTextView.text = self.textView.text;
     [popupTextView showInView:self.view];
+    
+    //
+    // NOTE:
+    // You can add your custom-button after calling -showInView:
+    // (it's better to add on either superview or superview.superview)
+    // https://github.com/inamiy/YIPopupTextView/issues/3
+    //
+    // [popupTextView.superview addSubview:customButton];
+    //
 }
 
 - (IBAction)handleModalButton:(id)sender 

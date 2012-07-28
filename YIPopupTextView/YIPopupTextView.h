@@ -20,19 +20,11 @@
 @end
 
 
-@interface YIPopupTextView : SSTextView {
-    NSUInteger  _maxCount;
-    
-    UIView*     _backgroundView;
-    UIView*     _popupView;
-    UILabel*    _countLabel;
-    UIButton*   _closeButton;
-    
-    BOOL        _shouldAnimate;
-}
+@interface YIPopupTextView : SSTextView
 
 @property (nonatomic, assign) id <YIPopupTextViewDelegate> delegate;
-@property (nonatomic, assign) BOOL showCloseButton;
+@property (nonatomic, assign) BOOL showCloseButton;             // default = YES
+@property (nonatomic, assign) BOOL caretShiftGestureEnabled;    // default = NO
 
 - (id)initWithPlaceHolder:(NSString*)placeHolder maxCount:(NSUInteger)maxCount;
 - (void)showInView:(UIView*)view;
