@@ -70,11 +70,12 @@
 - (IBAction)handleEditButton:(id)sender 
 {
     // NOTE: maxCount = 0 to hide count
-    YIPopupTextView* popupTextView = [[YIPopupTextView alloc] initWithPlaceHolder:@"input here" maxCount:300];
+    YIPopupTextView* popupTextView = [[YIPopupTextView alloc] initWithPlaceHolder:@"input here" maxCount:1000];
     popupTextView.delegate = self;
     popupTextView.showCloseButton = YES;
     popupTextView.caretShiftGestureEnabled = YES;   // default = NO
     popupTextView.text = self.textView.text;
+//    popupTextView.editable = NO;                  // set editable=NO to show without keyboard
     [popupTextView showInView:self.view];
     
     //

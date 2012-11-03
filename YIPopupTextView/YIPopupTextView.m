@@ -274,6 +274,23 @@ typedef enum {
     
     [self startObservingNotifications];
     
+    // NOTE: textView popup animation doesn't work when using UIView animation
+    CABasicAnimation *animation = [CABasicAnimation animationWithKeyPath:@"transform"];
+    animation.delegate = self;
+    animation.duration = ANIMATION_DURATION;
+    animation.repeatCount = 0;
+    animation.fromValue =[NSValue valueWithCATransform3D:CATransform3DMakeScale(0.25, 0.25, 0.25)];
+    animation.toValue =[NSValue valueWithCATransform3D:CATransform3DMakeScale(1.0, 1.0, 1.0)];
+    [_popupView.layer addAnimation:animation forKey:@"popupAnimation"];
+    
+    [UIView animateWithDuration:ANIMATION_DURATION animations:^{
+        _backgroundView.alpha = 1;
+    }];
+    
+    if (!self.editable) {
+        _popupView.frame = _backgroundView.bounds;
+    }
+    
     [self becomeFirstResponder];
 }
 
@@ -282,6 +299,30 @@ typedef enum {
     if ([self isFirstResponder]) {
         [self resignFirstResponder];
     }
+    
+    [self stopObservingNotifications];
+    
+    if ([self.delegate respondsToSelector:@selector(popupTextView:willDismissWithText:)]) {
+        [self.delegate popupTextView:self willDismissWithText:self.text];
+    }
+    
+    [UIView animateWithDuration:ANIMATION_DURATION animations:^{
+        
+        _backgroundView.alpha = 0;
+        
+    } completion:^(BOOL finished) {
+        
+        if (finished) {
+            if ([self.delegate respondsToSelector:@selector(popupTextView:didDismissWithText:)]) {
+                [self.delegate popupTextView:self didDismissWithText:self.text];
+            }
+            
+            [_backgroundView removeFromSuperview];
+            _backgroundView = nil;
+            _popupView = nil;
+        }
+        
+    }];
 }
 
 #pragma mark -
@@ -290,6 +331,13 @@ typedef enum {
 
 - (void)startObservingNotifications
 {
+    [[UIDevice currentDevice] beginGeneratingDeviceOrientationNotifications];
+    
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(didReceiveOrientationDidChangeNotification:)
+                                                 name:UIDeviceOrientationDidChangeNotification
+                                               object:nil];
+    
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(didReceiveKeyboardWillShowNotification:)
                                                  name:UIKeyboardWillShowNotification 
@@ -299,20 +347,27 @@ typedef enum {
                                              selector:@selector(didReceiveTextDidChangeNotification:)
                                                  name:UITextViewTextDidChangeNotification 
                                                object:nil];
-    
-    [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(didReceiveTextDidEndEditingNotification:)
-                                                 name:UITextViewTextDidEndEditingNotification 
-                                               object:nil];
 }
 
 - (void)stopObservingNotifications
 {
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:UIDeviceOrientationDidChangeNotification object:nil];
     [[NSNotificationCenter defaultCenter] removeObserver:self name:UIKeyboardWillShowNotification object:nil];
     [[NSNotificationCenter defaultCenter] removeObserver:self name:UITextViewTextDidChangeNotification object:nil];
     [[NSNotificationCenter defaultCenter] removeObserver:self name:UITextViewTextDidEndEditingNotification object:nil];
+    
+    [[UIDevice currentDevice] endGeneratingDeviceOrientationNotifications];
 }
 
+// for editable = NO
+- (void)didReceiveOrientationDidChangeNotification:(NSNotification*)notification
+{
+    if (!self.editable) {
+        _popupView.frame = _backgroundView.bounds;
+    }
+}
+
+// for editable = YES
 - (void)didReceiveKeyboardWillShowNotification:(NSNotification*)notification
 {
     if (!_backgroundView.superview) return;
@@ -349,25 +404,6 @@ typedef enum {
     frame.size.height = popupViewHeight;
     _popupView.frame = frame;
     
-    if (_shouldAnimate) {
-        
-        // NOTE: textView popup animation doesn't work when using UIView animation
-        CABasicAnimation *animation = [CABasicAnimation animationWithKeyPath:@"transform"];
-        animation.delegate = self;
-        animation.duration = ANIMATION_DURATION;
-        animation.repeatCount = 0;
-        animation.fromValue =[NSValue valueWithCATransform3D:CATransform3DMakeScale(0.25, 0.25, 0.25)];
-        animation.toValue =[NSValue valueWithCATransform3D:CATransform3DMakeScale(1.0, 1.0, 1.0)];
-        [_popupView.layer addAnimation:animation forKey:@"popupAnimation"];
-        
-        [UIView animateWithDuration:ANIMATION_DURATION animations:^{
-            _backgroundView.alpha = 1;
-        } completion:^(BOOL finished) {
-            _shouldAnimate = NO;
-        }];
-        
-    }
-    
 }
 
 - (void)didReceiveTextDidChangeNotification:(NSNotification*)notification
@@ -375,35 +411,6 @@ typedef enum {
     if ([notification object] != self) return;
     
     [self updateCount];
-}
-
-- (void)didReceiveTextDidEndEditingNotification:(NSNotification*)notification
-{
-    if ([notification object] != self) return;
-    
-    [self stopObservingNotifications];
-    
-    if ([self.delegate respondsToSelector:@selector(popupTextView:willDismissWithText:)]) {
-        [self.delegate popupTextView:self willDismissWithText:self.text];
-    }
-    
-    [UIView animateWithDuration:ANIMATION_DURATION animations:^{
-        
-        _backgroundView.alpha = 0;
-        
-    } completion:^(BOOL finished) {
-        
-        if (finished) {
-            if ([self.delegate respondsToSelector:@selector(popupTextView:didDismissWithText:)]) {
-                [self.delegate popupTextView:self didDismissWithText:self.text];
-            }
-            
-            [_backgroundView removeFromSuperview];
-            _backgroundView = nil;
-            _popupView = nil;
-        }
-        
-    }];
 }
 
 #pragma mark -
