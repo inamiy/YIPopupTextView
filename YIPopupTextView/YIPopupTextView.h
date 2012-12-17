@@ -13,6 +13,15 @@
 @class YIPopupTextView;
 
 
+typedef NS_ENUM(NSInteger, YIPopupTextViewButtonStyle) {
+    YIPopupTextViewButtonStyleNone,
+    YIPopupTextViewButtonStyleRightCancel,          // "x" on the upper-right
+    YIPopupTextViewButtonStyleRightDone,            // "check" on the upper-right
+    YIPopupTextViewButtonStyleLeftCancelRightDone,
+    YIPopupTextViewButtonStyleRightCancelAndDone
+};
+
+
 @protocol YIPopupTextViewDelegate <UITextViewDelegate>
 @optional
 - (void)popupTextView:(YIPopupTextView*)textView willDismissWithText:(NSString*)text cancelled:(BOOL)cancelled;
@@ -28,11 +37,17 @@
 @interface YIPopupTextView : SSTextView
 
 @property (nonatomic, assign) id <YIPopupTextViewDelegate> delegate;
-@property (nonatomic, assign) BOOL showCloseButton;             // default = YES
-@property (nonatomic, assign) BOOL showAcceptButton;             // default = YES
+
 @property (nonatomic, assign) BOOL caretShiftGestureEnabled;    // default = NO
 
-- (id)initWithPlaceHolder:(NSString*)placeHolder maxCount:(NSUInteger)maxCount;
+- (id)initWithPlaceHolder:(NSString*)placeHolder
+                 maxCount:(NSUInteger)maxCount;     // YIPopupTextViewButtonStyleRightCancel & tintsDoneButton=NO
+
+- (id)initWithPlaceHolder:(NSString*)placeHolder
+                 maxCount:(NSUInteger)maxCount
+              buttonStyle:(YIPopupTextViewButtonStyle)buttonStyle
+          tintsDoneButton:(BOOL)tintsDoneButton;
+
 - (void)showInView:(UIView*)view;
 - (void)dismiss;
 

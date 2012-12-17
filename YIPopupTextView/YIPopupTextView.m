@@ -27,6 +27,7 @@
 
 + (UIImage*)closeButtonImageWithSize:(CGSize)size strokeColor:(UIColor*)strokeColor fillColor:(UIColor*)fillColor shadow:(BOOL)hasShadow;
 + (UIImage*)acceptButtonImageWithSize:(CGSize)size strokeColor:(UIColor*)strokeColor fillColor:(UIColor*)fillColor shadow:(BOOL)hasShadow;
+
 @end
 
 
@@ -170,10 +171,13 @@ typedef enum {
 }
 
 @dynamic delegate;
-@synthesize showCloseButton = _showCloseButton;
-@synthesize showAcceptButton = _showAcceptButton;
 
 - (id)initWithPlaceHolder:(NSString*)placeHolder maxCount:(NSUInteger)maxCount
+{
+    return [self initWithPlaceHolder:placeHolder maxCount:maxCount buttonStyle:YIPopupTextViewButtonStyleRightCancel tintsDoneButton:NO];
+}
+
+- (id)initWithPlaceHolder:(NSString*)placeHolder maxCount:(NSUInteger)maxCount buttonStyle:(YIPopupTextViewButtonStyle)buttonStyle tintsDoneButton:(BOOL)tintsDoneButton
 {
     self = [super init];
     if (self) {
@@ -219,42 +223,74 @@ typedef enum {
 #endif
         }
         
-        _closeButton = [UIButton buttonWithType:UIButtonTypeCustom];
-        [_closeButton setImage:[UIImage closeButtonImageWithSize:CGSizeMake(CLOSE_IMAGE_WIDTH, CLOSE_IMAGE_WIDTH) 
-                                                     strokeColor:[UIColor whiteColor] 
-                                                       fillColor:[UIColor blackColor] 
-                                                          shadow:NO] 
-                      forState:UIControlStateNormal];
-        _closeButton.frame = CGRectMake(0, 0, CLOSE_IMAGE_WIDTH, CLOSE_IMAGE_WIDTH);
-        _closeButton.showsTouchWhenHighlighted = YES;
-        _closeButton.titleLabel.font = [UIFont systemFontOfSize:COUNT_SIZE];
-        [_closeButton addTarget:self action:@selector(handleCloseButton:) forControlEvents:UIControlEventTouchUpInside];
-        _closeButton.frame = CGRectMake(0,
-                                        0,
-                                        CLOSE_BUTTON_WIDTH, 
-                                        CLOSE_BUTTON_WIDTH);
-        _closeButton.autoresizingMask = UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleBottomMargin;
-        [_popupView addSubview:_closeButton];
+        CGFloat buttonRisingRatio = 0.3;
         
-        _acceptButton = [UIButton buttonWithType:UIButtonTypeCustom];
-        [_acceptButton setImage:[UIImage acceptButtonImageWithSize:CGSizeMake(CLOSE_IMAGE_WIDTH, CLOSE_IMAGE_WIDTH)
-                                                     strokeColor:[UIColor whiteColor]
-                                                       fillColor:[UIColor blackColor]
-                                                          shadow:NO]
-                      forState:UIControlStateNormal];
-        _acceptButton.frame = CGRectMake(0, 0, CLOSE_IMAGE_WIDTH, CLOSE_IMAGE_WIDTH);
-        _acceptButton.showsTouchWhenHighlighted = YES;
-        _acceptButton.titleLabel.font = [UIFont systemFontOfSize:COUNT_SIZE];
-        [_acceptButton addTarget:self action:@selector(handleAcceptButton:) forControlEvents:UIControlEventTouchUpInside];
-        _acceptButton.frame = CGRectMake(_popupView.bounds.size.width-TEXTVIEW_INSETS.right-CLOSE_IMAGE_WIDTH,
-                                        0,
-                                        CLOSE_BUTTON_WIDTH,
-                                        CLOSE_BUTTON_WIDTH);
-        _acceptButton.autoresizingMask = UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleBottomMargin;
-        [_popupView addSubview:_acceptButton];
+        // close (cancel) button
+        if (buttonStyle == YIPopupTextViewButtonStyleRightCancel ||
+            buttonStyle == YIPopupTextViewButtonStyleLeftCancelRightDone ||
+            buttonStyle == YIPopupTextViewButtonStyleRightCancelAndDone) {
+            
+            _closeButton = [UIButton buttonWithType:UIButtonTypeCustom];
+            [_closeButton setImage:[UIImage closeButtonImageWithSize:CGSizeMake(CLOSE_IMAGE_WIDTH, CLOSE_IMAGE_WIDTH)
+                                                         strokeColor:[UIColor whiteColor]
+                                                           fillColor:[UIColor blackColor]
+                                                              shadow:NO]
+                          forState:UIControlStateNormal];
+            
+            CGFloat buttonX;
+            UIViewAutoresizing autoresizing;
+            
+            switch (buttonStyle) {
+                case YIPopupTextViewButtonStyleRightCancel:
+                    buttonX = _popupView.bounds.size.width-TEXTVIEW_INSETS.right-(1-buttonRisingRatio)*CLOSE_IMAGE_WIDTH;
+                    autoresizing = UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleBottomMargin;
+                    break;
+                case YIPopupTextViewButtonStyleRightCancelAndDone:
+                    buttonX = _popupView.bounds.size.width-TEXTVIEW_INSETS.right-(2-buttonRisingRatio)*CLOSE_IMAGE_WIDTH;
+                    autoresizing = UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleBottomMargin;
+                    break;
+                default:
+                    buttonX = TEXTVIEW_INSETS.left-(buttonRisingRatio)*CLOSE_IMAGE_WIDTH;
+                    autoresizing = UIViewAutoresizingFlexibleRightMargin;
+                    break;
+            }
+            
+            _closeButton.frame = CGRectMake(buttonX, TEXTVIEW_INSETS.top-buttonRisingRatio*CLOSE_IMAGE_WIDTH, CLOSE_IMAGE_WIDTH, CLOSE_IMAGE_WIDTH);
+            _closeButton.showsTouchWhenHighlighted = YES;
+            [_closeButton addTarget:self action:@selector(handleCloseButton:) forControlEvents:UIControlEventTouchUpInside];
+            _closeButton.autoresizingMask = autoresizing;
+            [_popupView addSubview:_closeButton];
+        }
         
-        self.showCloseButton = YES;
-        self.showAcceptButton = YES;
+        // accept (done) button
+        if (buttonStyle == YIPopupTextViewButtonStyleRightDone ||
+            buttonStyle == YIPopupTextViewButtonStyleLeftCancelRightDone ||
+            buttonStyle == YIPopupTextViewButtonStyleRightCancelAndDone) {
+            
+            UIColor* tintColor;
+            if (tintsDoneButton) {
+                tintColor = [UIColor colorWithRed:68.0/255.0 green:153.0/255.0 blue:34.0/255.0 alpha:1]; // #449922
+            }
+            else {
+                tintColor = [UIColor blackColor];;
+            }
+            
+            _acceptButton = [UIButton buttonWithType:UIButtonTypeCustom];
+            [_acceptButton setImage:[UIImage acceptButtonImageWithSize:CGSizeMake(CLOSE_IMAGE_WIDTH, CLOSE_IMAGE_WIDTH)
+                                                           strokeColor:[UIColor whiteColor]
+                                                             fillColor:tintColor
+                                                                shadow:NO]
+                           forState:UIControlStateNormal];
+            
+            CGFloat buttonX = buttonX = _popupView.bounds.size.width-TEXTVIEW_INSETS.right/2-CLOSE_IMAGE_WIDTH;
+            UIViewAutoresizing autoresizing = UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleBottomMargin;
+            
+            _acceptButton.frame = CGRectMake(buttonX, TEXTVIEW_INSETS.top-buttonRisingRatio*CLOSE_IMAGE_WIDTH, CLOSE_IMAGE_WIDTH, CLOSE_IMAGE_WIDTH);
+            _acceptButton.showsTouchWhenHighlighted = YES;
+            [_acceptButton addTarget:self action:@selector(handleAcceptButton:) forControlEvents:UIControlEventTouchUpInside];
+            _acceptButton.autoresizingMask = autoresizing;
+            [_popupView addSubview:_acceptButton];
+        }
         
     }
     return self;
@@ -274,18 +310,6 @@ typedef enum {
 #pragma mark -
 
 #pragma mark Accessors
-
-- (void)setShowCloseButton:(BOOL)showCloseButton
-{
-    _showCloseButton = showCloseButton;
-    _closeButton.hidden = !showCloseButton;
-}
-
-- (void)setShowAcceptButton:(BOOL)showAcceptButton
-{
-    _showAcceptButton = showAcceptButton;
-    _acceptButton.hidden = !showAcceptButton;
-}
 
 - (BOOL)caretShiftGestureEnabled
 {
