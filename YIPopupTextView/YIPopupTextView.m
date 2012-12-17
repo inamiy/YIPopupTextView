@@ -100,13 +100,13 @@
     if (strokeColor) {
         [strokeColor setStroke];
         CGContextSetLineWidth(context, IS_IPAD ? 6.0 : 3.0);
-        CGFloat lineLength  = radius/2.5;
-        CGContextMoveToPoint(context, cx-lineLength, cy-lineLength+3);
-        CGContextAddLineToPoint(context, cx-lineLength+3, cy+lineLength);
-        CGContextDrawPath(context, kCGPathFillStroke);
         
-        CGContextMoveToPoint(context, cx+lineLength, cy-lineLength);
-        CGContextAddLineToPoint(context, cx-lineLength+2, cy+lineLength);
+        CGFloat t = (IS_IPAD ? 2.0 : 1.0); // transitionX
+        CGFloat lineLength  = radius/3.0;
+        
+        CGContextMoveToPoint(context, cx-2*lineLength+2*t, cy); // extra +t for steep angle
+        CGContextAddLineToPoint(context, cx-lineLength+t, cy+lineLength);
+        CGContextAddLineToPoint(context, cx+lineLength+t, cy-lineLength);
         CGContextDrawPath(context, kCGPathFillStroke);
     }
     
