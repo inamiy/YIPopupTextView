@@ -111,21 +111,15 @@
 
 #pragma mark YIPopupTextViewDelegate
 
-- (void)popupTextView:(YIPopupTextView *)textView willDismissWithText:(NSString *)text
+- (void)popupTextView:(YIPopupTextView *)textView willDismissWithText:(NSString *)text cancelled:(BOOL)cancelled
 {
-    NSLog(@"will dismiss");
+    NSLog(@"will dismiss: cancelled=%d",cancelled);
     self.textView.text = text;
 }
 
-- (void)popupTextView:(YIPopupTextView *)textView didDismissWithText:(NSString *)text
+- (void)popupTextView:(YIPopupTextView *)textView didDismissWithText:(NSString *)text cancelled:(BOOL)cancelled
 {
-    NSLog(@"did dismiss");
+    NSLog(@"did dismiss: cancelled=%d",cancelled);
 }
-
-- (void)popupTextViewNoText:(YIPopupTextView *)textView
-{
-    NSLog(@"no text");
-}
-
 
 @end

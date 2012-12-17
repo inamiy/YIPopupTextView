@@ -368,13 +368,21 @@ typedef enum {
 
 - (void)dismiss
 {
+    [self dismissWithCancelled:NO];
+}
+
+- (void)dismissWithCancelled:(BOOL)cancelled
+{
     if ([self isFirstResponder]) {
         [self resignFirstResponder];
     }
     
     [self stopObservingNotifications];
     
-    if ([self.delegate respondsToSelector:@selector(popupTextView:willDismissWithText:)]) {
+    if ([self.delegate respondsToSelector:@selector(popupTextView:willDismissWithText:cancelled:)]) {
+        [self.delegate popupTextView:self willDismissWithText:self.text cancelled:cancelled];
+    }
+    else if ([self.delegate respondsToSelector:@selector(popupTextView:willDismissWithText:)]) {
         [self.delegate popupTextView:self willDismissWithText:self.text];
     }
     
@@ -385,7 +393,10 @@ typedef enum {
     } completion:^(BOOL finished) {
         
         if (finished) {
-            if ([self.delegate respondsToSelector:@selector(popupTextView:didDismissWithText:)]) {
+            if ([self.delegate respondsToSelector:@selector(popupTextView:didDismissWithText:cancelled:)]) {
+                [self.delegate popupTextView:self didDismissWithText:self.text cancelled:cancelled];
+            }
+            else if ([self.delegate respondsToSelector:@selector(popupTextView:didDismissWithText:)]) {
                 [self.delegate popupTextView:self didDismissWithText:self.text];
             }
             
@@ -513,7 +524,12 @@ typedef enum {
 
 - (void)handleCloseButton:(UIButton*)sender
 {
-    [self dismiss];
+    [self dismissWithCancelled:YES];
+}
+
+- (void)handleAcceptButton:(UIButton*)sender
+{
+    [self dismissWithCancelled:NO];
 }
 
 #pragma mark 
