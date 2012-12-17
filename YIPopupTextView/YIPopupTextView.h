@@ -17,6 +17,7 @@
 @optional
 - (void)popupTextView:(YIPopupTextView*)textView willDismissWithText:(NSString*)text;
 - (void)popupTextView:(YIPopupTextView*)textView didDismissWithText:(NSString*)text;
+- (void)popupTextViewNoText:(YIPopupTextView*)textView;
 @end
 
 
@@ -24,11 +25,13 @@
 
 @property (nonatomic, assign) id <YIPopupTextViewDelegate> delegate;
 @property (nonatomic, assign) BOOL showCloseButton;             // default = YES
+@property (nonatomic, assign) BOOL showAcceptButton;             // default = YES
 @property (nonatomic, assign) BOOL caretShiftGestureEnabled;    // default = NO
 
 - (id)initWithPlaceHolder:(NSString*)placeHolder maxCount:(NSUInteger)maxCount;
 - (void)showInView:(UIView*)view;
 - (void)dismiss;
+- (void)accept;
 
 @end
 

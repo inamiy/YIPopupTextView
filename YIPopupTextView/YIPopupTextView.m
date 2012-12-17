@@ -26,7 +26,7 @@
 @interface UIImage (YIPopupTextView)
 
 + (UIImage*)closeButtonImageWithSize:(CGSize)size strokeColor:(UIColor*)strokeColor fillColor:(UIColor*)fillColor shadow:(BOOL)hasShadow;
-
++ (UIImage*)acceptButtonImageWithSize:(CGSize)size strokeColor:(UIColor*)strokeColor fillColor:(UIColor*)fillColor shadow:(BOOL)hasShadow;
 @end
 
 
@@ -78,6 +78,51 @@
     return image;
 }
 
++ (UIImage*)acceptButtonImageWithSize:(CGSize)size strokeColor:(UIColor*)strokeColor fillColor:(UIColor*)fillColor shadow:(BOOL)hasShadow
+{
+    UIGraphicsBeginImageContextWithOptions(size, NO, [[UIScreen mainScreen] scale]);
+    CGContextRef context = UIGraphicsGetCurrentContext();
+    CGContextClearRect(context, CGRectMake(0, 0, size.width, size.height));
+    
+    float cx = size.width/2;
+    float cy = size.height/2;
+    
+    float radius = size.width > size.height ? size.height/2 : size.height/2;
+    radius -= IS_IPAD ? 8 : 4;
+    
+    CGRect rectEllipse = CGRectMake(cx - radius, cy - radius, radius*2, radius*2);
+    
+    if (fillColor) {
+        [fillColor setFill];
+        CGContextFillEllipseInRect(context, rectEllipse);
+    }
+    
+    if (strokeColor) {
+        [strokeColor setStroke];
+        CGContextSetLineWidth(context, IS_IPAD ? 6.0 : 3.0);
+        CGFloat lineLength  = radius/2.5;
+        CGContextMoveToPoint(context, cx-lineLength, cy-lineLength+3);
+        CGContextAddLineToPoint(context, cx-lineLength+3, cy+lineLength);
+        CGContextDrawPath(context, kCGPathFillStroke);
+        
+        CGContextMoveToPoint(context, cx+lineLength, cy-lineLength);
+        CGContextAddLineToPoint(context, cx-lineLength+2, cy+lineLength);
+        CGContextDrawPath(context, kCGPathFillStroke);
+    }
+    
+    if (hasShadow) {
+        CGContextSetShadow(context, CGSizeMake(IS_IPAD ? 6 : 3, IS_IPAD ? 6 : 3), IS_IPAD ? 4 : 2);
+    }
+    
+    if (strokeColor) {
+        CGContextStrokeEllipseInRect(context, rectEllipse);
+    }
+    
+    UIImage* image = UIGraphicsGetImageFromCurrentImageContext();
+    UIGraphicsEndImageContext();
+    
+    return image;
+}
 @end
 
 
@@ -113,6 +158,8 @@ typedef enum {
     UIView*     _popupView;
     UILabel*    _countLabel;
     UIButton*   _closeButton;
+    UIButton*   _acceptButton;
+
     
     BOOL        _shouldAnimate;
     
@@ -124,6 +171,7 @@ typedef enum {
 
 @dynamic delegate;
 @synthesize showCloseButton = _showCloseButton;
+@synthesize showAcceptButton = _showAcceptButton;
 
 - (id)initWithPlaceHolder:(NSString*)placeHolder maxCount:(NSUInteger)maxCount
 {
@@ -181,14 +229,32 @@ typedef enum {
         _closeButton.showsTouchWhenHighlighted = YES;
         _closeButton.titleLabel.font = [UIFont systemFontOfSize:COUNT_SIZE];
         [_closeButton addTarget:self action:@selector(handleCloseButton:) forControlEvents:UIControlEventTouchUpInside];
-        _closeButton.frame = CGRectMake(_popupView.bounds.size.width-TEXTVIEW_INSETS.right-CLOSE_IMAGE_WIDTH, 
+        _closeButton.frame = CGRectMake(0,
                                         0,
                                         CLOSE_BUTTON_WIDTH, 
                                         CLOSE_BUTTON_WIDTH);
         _closeButton.autoresizingMask = UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleBottomMargin;
         [_popupView addSubview:_closeButton];
         
+        _acceptButton = [UIButton buttonWithType:UIButtonTypeCustom];
+        [_acceptButton setImage:[UIImage acceptButtonImageWithSize:CGSizeMake(CLOSE_IMAGE_WIDTH, CLOSE_IMAGE_WIDTH)
+                                                     strokeColor:[UIColor whiteColor]
+                                                       fillColor:[UIColor blackColor]
+                                                          shadow:NO]
+                      forState:UIControlStateNormal];
+        _acceptButton.frame = CGRectMake(0, 0, CLOSE_IMAGE_WIDTH, CLOSE_IMAGE_WIDTH);
+        _acceptButton.showsTouchWhenHighlighted = YES;
+        _acceptButton.titleLabel.font = [UIFont systemFontOfSize:COUNT_SIZE];
+        [_acceptButton addTarget:self action:@selector(handleAcceptButton:) forControlEvents:UIControlEventTouchUpInside];
+        _acceptButton.frame = CGRectMake(_popupView.bounds.size.width-TEXTVIEW_INSETS.right-CLOSE_IMAGE_WIDTH,
+                                        0,
+                                        CLOSE_BUTTON_WIDTH,
+                                        CLOSE_BUTTON_WIDTH);
+        _acceptButton.autoresizingMask = UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleBottomMargin;
+        [_popupView addSubview:_acceptButton];
+        
         self.showCloseButton = YES;
+        self.showAcceptButton = YES;
         
     }
     return self;
@@ -213,6 +279,11 @@ typedef enum {
 {
     _showCloseButton = showCloseButton;
     _closeButton.hidden = !showCloseButton;
+}
+- (void)setShowAcceptButton:(BOOL)showAcceptButton
+{
+    _showAcceptButton = showAcceptButton;
+    _acceptButton.hidden = !showAcceptButton;
 }
 
 - (BOOL)caretShiftGestureEnabled
@@ -295,6 +366,33 @@ typedef enum {
 }
 
 - (void)dismiss
+{
+    if ([self isFirstResponder]) {
+        [self resignFirstResponder];
+    }
+    
+    [self stopObservingNotifications];
+    
+    
+    [UIView animateWithDuration:ANIMATION_DURATION animations:^{
+        
+        _backgroundView.alpha = 0;
+        
+    } completion:^(BOOL finished) {
+        
+        if (finished) {
+            if ([self.delegate respondsToSelector:@selector(popupTextViewNoText:)]) {
+                [self.delegate popupTextViewNoText:self ];
+            }
+            
+            [_backgroundView removeFromSuperview];
+            _backgroundView = nil;
+            _popupView = nil;
+        }
+        
+    }];
+}
+- (void)accept
 {
     if ([self isFirstResponder]) {
         [self resignFirstResponder];
@@ -442,6 +540,10 @@ typedef enum {
 - (void)handleCloseButton:(UIButton*)sender
 {
     [self dismiss];
+}
+- (void)handleAcceptButton:(UIButton*)sender
+{
+    [self accept];
 }
 
 #pragma mark 

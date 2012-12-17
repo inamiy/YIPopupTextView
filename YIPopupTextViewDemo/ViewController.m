@@ -122,4 +122,10 @@
     NSLog(@"did dismiss");
 }
 
+- (void)popupTextViewNoText:(YIPopupTextView *)textView
+{
+    NSLog(@"no text");
+}
+
+
 @end
