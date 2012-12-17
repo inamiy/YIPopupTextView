@@ -17,7 +17,6 @@
 @optional
 - (void)popupTextView:(YIPopupTextView*)textView willDismissWithText:(NSString*)text;
 - (void)popupTextView:(YIPopupTextView*)textView didDismissWithText:(NSString*)text;
-- (void)popupTextViewNoText:(YIPopupTextView*)textView;
 @end
 
 
@@ -31,7 +30,6 @@
 - (id)initWithPlaceHolder:(NSString*)placeHolder maxCount:(NSUInteger)maxCount;
 - (void)showInView:(UIView*)view;
 - (void)dismiss;
-- (void)accept;
 
 @end
 

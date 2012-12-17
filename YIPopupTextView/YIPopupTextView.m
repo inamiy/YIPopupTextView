@@ -280,6 +280,7 @@ typedef enum {
     _showCloseButton = showCloseButton;
     _closeButton.hidden = !showCloseButton;
 }
+
 - (void)setShowAcceptButton:(BOOL)showAcceptButton
 {
     _showAcceptButton = showAcceptButton;
@@ -366,33 +367,6 @@ typedef enum {
 }
 
 - (void)dismiss
-{
-    if ([self isFirstResponder]) {
-        [self resignFirstResponder];
-    }
-    
-    [self stopObservingNotifications];
-    
-    
-    [UIView animateWithDuration:ANIMATION_DURATION animations:^{
-        
-        _backgroundView.alpha = 0;
-        
-    } completion:^(BOOL finished) {
-        
-        if (finished) {
-            if ([self.delegate respondsToSelector:@selector(popupTextViewNoText:)]) {
-                [self.delegate popupTextViewNoText:self ];
-            }
-            
-            [_backgroundView removeFromSuperview];
-            _backgroundView = nil;
-            _popupView = nil;
-        }
-        
-    }];
-}
-- (void)accept
 {
     if ([self isFirstResponder]) {
         [self resignFirstResponder];
@@ -540,10 +514,6 @@ typedef enum {
 - (void)handleCloseButton:(UIButton*)sender
 {
     [self dismiss];
-}
-- (void)handleAcceptButton:(UIButton*)sender
-{
-    [self accept];
 }
 
 #pragma mark 
