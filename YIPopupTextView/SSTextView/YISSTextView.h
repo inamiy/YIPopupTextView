@@ -1,5 +1,5 @@
 //
-//  SSTextView.h
+//  YISSTextView.h
 //  SSToolkit
 //
 //  Created by Sam Soffes on 8/18/10.
@@ -10,7 +10,7 @@
  @brief UITextView subclass that adds placeholder support like
  UITextField has.
  */
-@interface SSTextView : UITextView {
+@interface YISSTextView : UITextView {
 	
 @private
 	

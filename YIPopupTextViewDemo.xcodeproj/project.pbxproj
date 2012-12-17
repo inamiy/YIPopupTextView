@@ -16,7 +16,7 @@
 		48C34CBB14D920D50012AB8B /* MainStoryboard.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 48C34CB914D920D50012AB8B /* MainStoryboard.storyboard */; };
 		48C34CBE14D920D50012AB8B /* ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 48C34CBD14D920D50012AB8B /* ViewController.m */; };
 		48C34CC714D9218D0012AB8B /* YIPopupTextView.m in Sources */ = {isa = PBXBuildFile; fileRef = 48C34CC614D9218D0012AB8B /* YIPopupTextView.m */; };
-		48C34CCB14D921EB0012AB8B /* SSTextView.m in Sources */ = {isa = PBXBuildFile; fileRef = 48C34CCA14D921EB0012AB8B /* SSTextView.m */; };
+		48C34CCB14D921EB0012AB8B /* YISSTextView.m in Sources */ = {isa = PBXBuildFile; fileRef = 48C34CCA14D921EB0012AB8B /* YISSTextView.m */; };
 		48C34CD114D923DE0012AB8B /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 48C34CD014D923DE0012AB8B /* QuartzCore.framework */; };
 /* End PBXBuildFile section */
 
@@ -36,8 +36,8 @@
 		48C34CBD14D920D50012AB8B /* ViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ViewController.m; sourceTree = "<group>"; };
 		48C34CC514D9218D0012AB8B /* YIPopupTextView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = YIPopupTextView.h; sourceTree = "<group>"; };
 		48C34CC614D9218D0012AB8B /* YIPopupTextView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = YIPopupTextView.m; sourceTree = "<group>"; };
-		48C34CC914D921EB0012AB8B /* SSTextView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SSTextView.h; sourceTree = "<group>"; };
-		48C34CCA14D921EB0012AB8B /* SSTextView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SSTextView.m; sourceTree = "<group>"; };
+		48C34CC914D921EB0012AB8B /* YISSTextView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = YISSTextView.h; sourceTree = "<group>"; };
+		48C34CCA14D921EB0012AB8B /* YISSTextView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = YISSTextView.m; sourceTree = "<group>"; };
 		48C34CD014D923DE0012AB8B /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = System/Library/Frameworks/QuartzCore.framework; sourceTree = SDKROOT; };
 /* End PBXFileReference section */
 
@@ -122,8 +122,8 @@
 		48C34CC814D921EB0012AB8B /* SSTextView */ = {
 			isa = PBXGroup;
 			children = (
-				48C34CC914D921EB0012AB8B /* SSTextView.h */,
-				48C34CCA14D921EB0012AB8B /* SSTextView.m */,
+				48C34CC914D921EB0012AB8B /* YISSTextView.h */,
+				48C34CCA14D921EB0012AB8B /* YISSTextView.m */,
 			);
 			path = SSTextView;
 			sourceTree = "<group>";
@@ -195,7 +195,7 @@
 				48C34CB814D920D50012AB8B /* AppDelegate.m in Sources */,
 				48C34CBE14D920D50012AB8B /* ViewController.m in Sources */,
 				48C34CC714D9218D0012AB8B /* YIPopupTextView.m in Sources */,
-				48C34CCB14D921EB0012AB8B /* SSTextView.m in Sources */,
+				48C34CCB14D921EB0012AB8B /* YISSTextView.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

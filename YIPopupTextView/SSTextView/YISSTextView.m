@@ -1,23 +1,23 @@
 //
-//  SSTextView.m
+//  YISSTextView.m
 //  SSToolkit
 //
 //  Created by Sam Soffes on 8/18/10.
 //  Copyright 2010-2011 Sam Soffes. All rights reserved.
 //
 
-#import "SSTextView.h"
+#import "YISSTextView.h"
 
 #define IS_ARC              (__has_feature(objc_arc))
 
 
-@interface SSTextView (PrivateMethods)
+@interface YISSTextView (PrivateMethods)
 - (void)_updateShouldDrawPlaceholder;
 - (void)_textChanged:(NSNotification *)notification;
 @end
 
 
-@implementation SSTextView
+@implementation YISSTextView
 
 #pragma mark -
 #pragma mark Accessors
