@@ -3,7 +3,7 @@ YIPopupTextView
 
 facebook's post-like input text view for iOS.
 
-<img src="http://i.imgur.com/XSCZuja.png" alt="ScreenShot1" width="225px" style="width:225px;" />
+<img src="https://raw.github.com/inamiy/YIPopupTextView/master/Screenshots/screenshot1.png" alt="ScreenShot1" width="225px" style="width:225px;" /> <img src="https://raw.github.com/inamiy/YIPopupTextView/master/Screenshots/screenshot2.png" alt="ScreenShot1" width="225px" style="width:225px;" />
 
 How to use
 ----------
@@ -15,13 +15,6 @@ popupTextView.caretShiftGestureEnabled = YES;   // default = NO
 popupTextView.text = self.textView.text;
 //popupTextView.editable = NO;                  // set editable=NO to show without keyboard
 [popupTextView showInView:self.view];
-
-#pragma mark YIPopupTextViewDelegate
-
-- (void)popupTextView:(YIPopupTextView *)textView willDismissWithText:(NSString *)text cancelled:(BOOL)cancelled
-{
-    NSLog(@"will dismiss: cancelled=%d",cancelled);
-}
 
 //
 // NOTE:
