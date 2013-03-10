@@ -300,7 +300,8 @@ typedef enum {
 {
     self.delegate = nil;
     
-    [self stopObservingNotifications];
+    // comment-out: don't call endGeneratingDeviceOrientationNotifications twice
+    //[self stopObservingNotifications];
     
 #if !IS_ARC
     [super dealloc];
@@ -461,7 +462,6 @@ typedef enum {
     [[NSNotificationCenter defaultCenter] removeObserver:self name:UIDeviceOrientationDidChangeNotification object:nil];
     [[NSNotificationCenter defaultCenter] removeObserver:self name:UIKeyboardWillShowNotification object:nil];
     [[NSNotificationCenter defaultCenter] removeObserver:self name:UITextViewTextDidChangeNotification object:nil];
-    [[NSNotificationCenter defaultCenter] removeObserver:self name:UITextViewTextDidEndEditingNotification object:nil];
     
     [[UIDevice currentDevice] endGeneratingDeviceOrientationNotifications];
 }
