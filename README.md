@@ -5,6 +5,13 @@ facebook's post-like input text view for iOS.
 
 <img src="https://raw.github.com/inamiy/YIPopupTextView/master/Screenshots/screenshot1.png" alt="ScreenShot1" width="225px" style="width:225px;" /> <img src="https://raw.github.com/inamiy/YIPopupTextView/master/Screenshots/screenshot2.png" alt="ScreenShot1" width="225px" style="width:225px;" />
 
+Install via [CocoaPods](http://cocoapods.org/)
+----------
+
+```
+pod 'YIPopupTextView'
+```
+
 How to use
 ----------
 ```
