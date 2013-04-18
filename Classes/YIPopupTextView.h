@@ -27,10 +27,6 @@ typedef NS_ENUM(NSInteger, YIPopupTextViewButtonStyle) {
 - (void)popupTextView:(YIPopupTextView*)textView willDismissWithText:(NSString*)text cancelled:(BOOL)cancelled;
 - (void)popupTextView:(YIPopupTextView*)textView didDismissWithText:(NSString*)text cancelled:(BOOL)cancelled;
 
-// DEPRECATED
-- (void)popupTextView:(YIPopupTextView*)textView willDismissWithText:(NSString*)text DEPRECATED_ATTRIBUTE;
-- (void)popupTextView:(YIPopupTextView*)textView didDismissWithText:(NSString*)text DEPRECATED_ATTRIBUTE;
-
 @end
 
 

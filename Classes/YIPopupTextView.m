@@ -407,9 +407,6 @@ typedef enum {
     if ([self.delegate respondsToSelector:@selector(popupTextView:willDismissWithText:cancelled:)]) {
         [self.delegate popupTextView:self willDismissWithText:self.text cancelled:cancelled];
     }
-    else if ([self.delegate respondsToSelector:@selector(popupTextView:willDismissWithText:)]) {
-        [self.delegate popupTextView:self willDismissWithText:self.text];
-    }
     
     [UIView animateWithDuration:ANIMATION_DURATION animations:^{
         
@@ -420,9 +417,6 @@ typedef enum {
         if (finished) {
             if ([self.delegate respondsToSelector:@selector(popupTextView:didDismissWithText:cancelled:)]) {
                 [self.delegate popupTextView:self didDismissWithText:self.text cancelled:cancelled];
-            }
-            else if ([self.delegate respondsToSelector:@selector(popupTextView:didDismissWithText:)]) {
-                [self.delegate popupTextView:self didDismissWithText:self.text];
             }
             
             [_backgroundView removeFromSuperview];
