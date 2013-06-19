@@ -34,6 +34,8 @@ typedef NS_ENUM(NSInteger, YIPopupTextViewButtonStyle) {
 
 @property (nonatomic, assign) id <YIPopupTextViewDelegate> delegate;
 
+@property (nonatomic, strong) UIColor* outerBackgroundColor;    // default = black opaque
+
 @property (nonatomic, assign) BOOL caretShiftGestureEnabled;    // default = NO
 
 - (id)initWithPlaceHolder:(NSString*)placeHolder

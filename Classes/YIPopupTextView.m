@@ -312,6 +312,16 @@ typedef enum {
 
 #pragma mark Accessors
 
+- (UIColor *)outerBackgroundColor
+{
+    return _backgroundView.backgroundColor;
+}
+
+- (void)setOuterBackgroundColor:(UIColor *)outerBackgroundColor
+{
+    _backgroundView.backgroundColor = outerBackgroundColor;
+}
+
 - (BOOL)caretShiftGestureEnabled
 {
     return !!_panGesture;
