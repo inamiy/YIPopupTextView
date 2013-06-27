@@ -264,6 +264,7 @@ typedef enum {
         
         // accept (done) button
         if (buttonStyle == YIPopupTextViewButtonStyleRightDone ||
+            buttonStyle == YIPopupTextViewButtonStyleLeftDone ||
             buttonStyle == YIPopupTextViewButtonStyleLeftCancelRightDone ||
             buttonStyle == YIPopupTextViewButtonStyleRightCancelAndDone) {
             
@@ -282,7 +283,13 @@ typedef enum {
                                                                 shadow:NO]
                            forState:UIControlStateNormal];
             
-            CGFloat buttonX = buttonX = _popupView.bounds.size.width-TEXTVIEW_INSETS.right/2-CLOSE_IMAGE_WIDTH;
+            CGFloat buttonX;
+            if (buttonStyle == YIPopupTextViewButtonStyleLeftDone) {
+               buttonX  = buttonX = TEXTVIEW_INSETS.left-(buttonRisingRatio)*CLOSE_IMAGE_WIDTH;
+            }else{
+                buttonX = buttonX = _popupView.bounds.size.width-TEXTVIEW_INSETS.right/2-CLOSE_IMAGE_WIDTH;
+            }
+
             UIViewAutoresizing autoresizing = UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleBottomMargin;
             
             _acceptButton.frame = CGRectMake(buttonX, TEXTVIEW_INSETS.top-buttonRisingRatio*CLOSE_IMAGE_WIDTH, CLOSE_IMAGE_WIDTH, CLOSE_IMAGE_WIDTH);
