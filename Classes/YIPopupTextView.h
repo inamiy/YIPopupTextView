@@ -47,6 +47,11 @@ typedef NS_ENUM(NSInteger, YIPopupTextViewButtonStyle) {
               buttonStyle:(YIPopupTextViewButtonStyle)buttonStyle
           tintsDoneButton:(BOOL)tintsDoneButton;
 
+- (id)initWithPlaceHolder:(NSString*)placeHolder
+                 maxCount:(NSUInteger)maxCount
+              buttonStyle:(YIPopupTextViewButtonStyle)buttonStyle
+             AndDoneColor:(UIColor*)doneColor;
+
 - (void)showInView:(UIView*)view;
 - (void)dismiss;
 

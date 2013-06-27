@@ -179,6 +179,19 @@ typedef enum {
 
 - (id)initWithPlaceHolder:(NSString*)placeHolder maxCount:(NSUInteger)maxCount buttonStyle:(YIPopupTextViewButtonStyle)buttonStyle tintsDoneButton:(BOOL)tintsDoneButton
 {
+    UIColor* tintColor;
+    if (tintsDoneButton) {
+        tintColor = [UIColor colorWithRed:68.0/255.0 green:153.0/255.0 blue:34.0/255.0 alpha:1]; // #449922
+    }
+    else {
+        tintColor = [UIColor blackColor];;
+    }
+    
+    return [self initWithPlaceHolder:placeHolder maxCount:maxCount buttonStyle:buttonStyle AndDoneColor:tintColor];
+}
+
+- (id)initWithPlaceHolder:(NSString*)placeHolder maxCount:(NSUInteger)maxCount buttonStyle:(YIPopupTextViewButtonStyle)buttonStyle AndDoneColor:(UIColor*)doneColor
+{
     self = [super init];
     if (self) {
         _shouldAnimate = YES;
@@ -268,18 +281,14 @@ typedef enum {
             buttonStyle == YIPopupTextViewButtonStyleLeftCancelRightDone ||
             buttonStyle == YIPopupTextViewButtonStyleRightCancelAndDone) {
             
-            UIColor* tintColor;
-            if (tintsDoneButton) {
-                tintColor = [UIColor colorWithRed:68.0/255.0 green:153.0/255.0 blue:34.0/255.0 alpha:1]; // #449922
-            }
-            else {
-                tintColor = [UIColor blackColor];;
+            if (!doneColor) {
+                doneColor = [UIColor colorWithRed:68.0/255.0 green:153.0/255.0 blue:34.0/255.0 alpha:1]; // #449922
             }
             
             _acceptButton = [UIButton buttonWithType:UIButtonTypeCustom];
             [_acceptButton setImage:[UIImage acceptButtonImageWithSize:CGSizeMake(CLOSE_IMAGE_WIDTH, CLOSE_IMAGE_WIDTH)
                                                            strokeColor:[UIColor whiteColor]
-                                                             fillColor:tintColor
+                                                             fillColor:doneColor
                                                                 shadow:NO]
                            forState:UIControlStateNormal];
             
