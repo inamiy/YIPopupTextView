@@ -172,25 +172,32 @@ typedef enum {
 
 @dynamic delegate;
 
-- (id)initWithPlaceHolder:(NSString*)placeHolder maxCount:(NSUInteger)maxCount
+- (id)initWithPlaceHolder:(NSString*)placeHolder
+                 maxCount:(NSUInteger)maxCount
 {
     return [self initWithPlaceHolder:placeHolder maxCount:maxCount buttonStyle:YIPopupTextViewButtonStyleRightCancel tintsDoneButton:NO];
 }
 
-- (id)initWithPlaceHolder:(NSString*)placeHolder maxCount:(NSUInteger)maxCount buttonStyle:(YIPopupTextViewButtonStyle)buttonStyle tintsDoneButton:(BOOL)tintsDoneButton
+- (id)initWithPlaceHolder:(NSString*)placeHolder
+                 maxCount:(NSUInteger)maxCount
+              buttonStyle:(YIPopupTextViewButtonStyle)buttonStyle
+          tintsDoneButton:(BOOL)tintsDoneButton
 {
     UIColor* tintColor;
     if (tintsDoneButton) {
         tintColor = [UIColor colorWithRed:68.0/255.0 green:153.0/255.0 blue:34.0/255.0 alpha:1]; // #449922
     }
     else {
-        tintColor = [UIColor blackColor];;
+        tintColor = [UIColor blackColor];
     }
     
-    return [self initWithPlaceHolder:placeHolder maxCount:maxCount buttonStyle:buttonStyle AndDoneColor:tintColor];
+    return [self initWithPlaceHolder:placeHolder maxCount:maxCount buttonStyle:buttonStyle doneButtonColor:tintColor];
 }
 
-- (id)initWithPlaceHolder:(NSString*)placeHolder maxCount:(NSUInteger)maxCount buttonStyle:(YIPopupTextViewButtonStyle)buttonStyle AndDoneColor:(UIColor*)doneColor
+- (id)initWithPlaceHolder:(NSString*)placeHolder
+                 maxCount:(NSUInteger)maxCount
+              buttonStyle:(YIPopupTextViewButtonStyle)buttonStyle
+          doneButtonColor:(UIColor*)doneButtonColor
 {
     self = [super init];
     if (self) {
@@ -281,20 +288,20 @@ typedef enum {
             buttonStyle == YIPopupTextViewButtonStyleLeftCancelRightDone ||
             buttonStyle == YIPopupTextViewButtonStyleRightCancelAndDone) {
             
-            if (!doneColor) {
-                doneColor = [UIColor colorWithRed:68.0/255.0 green:153.0/255.0 blue:34.0/255.0 alpha:1]; // #449922
+            if (!doneButtonColor) {
+                doneButtonColor = [UIColor colorWithRed:68.0/255.0 green:153.0/255.0 blue:34.0/255.0 alpha:1]; // #449922
             }
             
             _acceptButton = [UIButton buttonWithType:UIButtonTypeCustom];
             [_acceptButton setImage:[UIImage acceptButtonImageWithSize:CGSizeMake(CLOSE_IMAGE_WIDTH, CLOSE_IMAGE_WIDTH)
                                                            strokeColor:[UIColor whiteColor]
-                                                             fillColor:doneColor
+                                                             fillColor:doneButtonColor
                                                                 shadow:NO]
                            forState:UIControlStateNormal];
             
             CGFloat buttonX;
             if (buttonStyle == YIPopupTextViewButtonStyleLeftDone) {
-               buttonX  = buttonX = TEXTVIEW_INSETS.left-(buttonRisingRatio)*CLOSE_IMAGE_WIDTH;
+                buttonX  = buttonX = TEXTVIEW_INSETS.left-(buttonRisingRatio)*CLOSE_IMAGE_WIDTH;
             }else{
                 buttonX = buttonX = _popupView.bounds.size.width-TEXTVIEW_INSETS.right/2-CLOSE_IMAGE_WIDTH;
             }
