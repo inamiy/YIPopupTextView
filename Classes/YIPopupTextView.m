@@ -557,8 +557,10 @@ typedef enum {
     _countLabel.text = [NSString stringWithFormat:@"%d", _maxCount-textCount];
     
     if (textCount > _maxCount) {
+        _acceptButton.enabled = FALSE;
         _countLabel.textColor = [UIColor redColor];
     } else {
+        _acceptButton.enabled = TRUE;
         _countLabel.textColor = [UIColor lightGrayColor];
     }
     
