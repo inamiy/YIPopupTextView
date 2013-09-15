@@ -1,4 +1,4 @@
-YIPopupTextView 1.0.0
+YIPopupTextView 1.0.1
 =====================
 
 facebook's post-like input text view for iOS.
@@ -42,7 +42,8 @@ typedef NS_ENUM(NSInteger, YIPopupTextViewButtonStyle) {
     YIPopupTextViewButtonStyleRightCancel,          // "x" on the upper-right
     YIPopupTextViewButtonStyleRightDone,            // "check" on the upper-right
     YIPopupTextViewButtonStyleLeftCancelRightDone,
-    YIPopupTextViewButtonStyleRightCancelAndDone
+    YIPopupTextViewButtonStyleRightCancelAndDone,
+    YIPopupTextViewButtonStyleLeftDone
 };
 
 ```
