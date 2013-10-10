@@ -8,6 +8,14 @@
 
 #import "ViewController.h"
 
+#define IS_IOS_AT_LEAST(ver)    ([[[UIDevice currentDevice] systemVersion] compare:ver] != NSOrderedAscending)
+
+
+@interface ViewController ()
+@property (nonatomic) YIPopupTextView* popupTextView;
+@end
+
+
 @implementation ViewController
 @synthesize textView;
 @synthesize editButton;
@@ -65,20 +73,81 @@
 
 #pragma mark -
 
+#pragma mark iOS7 StatusBar
+
+- (BOOL)prefersStatusBarHidden
+{
+//    return !!_popupTextView;
+    return NO;
+}
+
+- (UIStatusBarStyle)preferredStatusBarStyle
+{
+    if (_popupTextView) {
+        return UIStatusBarStyleLightContent;    // white text
+    }
+    else {
+        return UIStatusBarStyleDefault;         // black text
+    }
+}
+
+#pragma mark -
+
 #pragma mark IBActions
 
 - (IBAction)handleEditButton:(id)sender 
 {
+    BOOL editable = YES;
+    CGFloat statusBarHeight = 20;
+    CGFloat defaultInset = (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad ? 30 : 15);
+    
+    YIPopupTextView* popupTextView;
+    
+#if defined(__IPHONE_7_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_7_0
+    
+    if (IS_IOS_AT_LEAST(@"7.0")) {
+        UINavigationBar* navBar = self.navigationController.navigationBar;
+        UITabBar* tabBar = self.tabBarController.tabBar;
+        
+        CGFloat navBarHeight = (navBar && !navBar.hidden ? navBar.bounds.size.height : 0);
+        CGFloat tabBarHeight = (tabBar && !tabBar.hidden && !editable ? tabBar.bounds.size.height : 0);
+        
+        // For iOS7 flat-design, set textViewInsets manually to adjust frame for fullscreen size
+        popupTextView =
+        [[YIPopupTextView alloc] initWithPlaceHolder:@"input here"
+                                            maxCount:1000
+                                         buttonStyle:YIPopupTextViewButtonStyleRightCancelAndDone
+                                     doneButtonColor:nil // default color
+                                      textViewInsets:UIEdgeInsetsMake(defaultInset+statusBarHeight+navBarHeight,
+                                                                      defaultInset,
+                                                                      defaultInset+tabBarHeight,
+                                                                      defaultInset)];
+    }
+    else {
+        popupTextView =
+        [[YIPopupTextView alloc] initWithPlaceHolder:@"input here"
+                                            maxCount:1000
+                                         buttonStyle:YIPopupTextViewButtonStyleRightCancelAndDone
+                                     doneButtonColor:nil];
+    }
+    
+#else
+    
     // NOTE: maxCount = 0 to hide count
-    // YIPopupTextView* popupTextView = [[YIPopupTextView alloc] initWithPlaceHolder:@"input here" maxCount:1000];
-    YIPopupTextView* popupTextView = [[YIPopupTextView alloc] initWithPlaceHolder:@"input here"
-                                                                         maxCount:1000
-                                                                      buttonStyle:YIPopupTextViewButtonStyleRightCancelAndDone
-                                                                  tintsDoneButton:YES];
+    //popupTextView = [[YIPopupTextView alloc] initWithPlaceHolder:@"input here" maxCount:1000];
+    
+    popupTextView =
+    [[YIPopupTextView alloc] initWithPlaceHolder:@"input here"
+                                        maxCount:1000
+                                     buttonStyle:YIPopupTextViewButtonStyleRightCancelAndDone
+                                 doneButtonColor:nil];
+    
+#endif
+    
     popupTextView.delegate = self;
     popupTextView.caretShiftGestureEnabled = YES;   // default = NO
     popupTextView.text = self.textView.text;
-//    popupTextView.editable = NO;                  // set editable=NO to show without keyboard
+    popupTextView.editable = editable;                  // set editable=NO to show without keyboard
     [popupTextView showInView:self.view];
     
     //
@@ -89,9 +158,17 @@
     //
     // [popupTextView.superview addSubview:customButton];
     //
+    
+    _popupTextView = popupTextView;
+    
+#if defined(__IPHONE_7_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_7_0
+    if (IS_IOS_AT_LEAST(@"7.0")) {
+        [self setNeedsStatusBarAppearanceUpdate];
+    }
+#endif
 }
 
-- (IBAction)handleModalButton:(id)sender 
+- (IBAction)handleModalButton:(id)sender
 {
     UIViewController* vc = [self.storyboard instantiateViewControllerWithIdentifier:@"ViewController"];
     vc.title = @"modal";
@@ -118,6 +195,14 @@
 {
     NSLog(@"will dismiss: cancelled=%d",cancelled);
     self.textView.text = text;
+    
+    _popupTextView = nil;
+    
+#if defined(__IPHONE_7_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_7_0
+    if (IS_IOS_AT_LEAST(@"7.0")) {
+        [self setNeedsStatusBarAppearanceUpdate];
+    }
+#endif
 }
 
 - (void)popupTextView:(YIPopupTextView *)textView didDismissWithText:(NSString *)text cancelled:(BOOL)cancelled

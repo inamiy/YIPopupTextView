@@ -153,14 +153,14 @@ typedef enum {
 
 @implementation YIPopupTextView
 {
-    NSUInteger  _maxCount;
+    NSUInteger      _maxCount;
+    UIEdgeInsets    _textViewInsets;
     
     UIView*     _backgroundView;
     UIView*     _popupView;
     UILabel*    _countLabel;
     UIButton*   _closeButton;
     UIButton*   _acceptButton;
-
     
     BOOL        _shouldAnimate;
     
@@ -199,10 +199,26 @@ typedef enum {
               buttonStyle:(YIPopupTextViewButtonStyle)buttonStyle
           doneButtonColor:(UIColor*)doneButtonColor
 {
+    return [self initWithPlaceHolder:placeHolder maxCount:maxCount buttonStyle:buttonStyle doneButtonColor:doneButtonColor textViewInsets:UIEdgeInsetsZero];
+}
+
+- (id)initWithPlaceHolder:(NSString*)placeHolder
+                 maxCount:(NSUInteger)maxCount
+              buttonStyle:(YIPopupTextViewButtonStyle)buttonStyle
+          doneButtonColor:(UIColor*)doneButtonColor
+           textViewInsets:(UIEdgeInsets)textViewInsets
+{
     self = [super init];
     if (self) {
         _shouldAnimate = YES;
         _maxCount = maxCount;
+        
+        if (UIEdgeInsetsEqualToEdgeInsets(textViewInsets, UIEdgeInsetsZero)) {
+            _textViewInsets = TEXTVIEW_INSETS;  // preset insets
+        }
+        else {
+            _textViewInsets = textViewInsets;
+        }
         
         _backgroundView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 320, 460)];
         _backgroundView.backgroundColor = [UIColor blackColor];
@@ -217,7 +233,7 @@ typedef enum {
 #endif
         
         self.placeholder = placeHolder;
-        self.frame = UIEdgeInsetsInsetRect(_popupView.frame, TEXTVIEW_INSETS);
+        self.frame = UIEdgeInsetsInsetRect(_popupView.frame, _textViewInsets);
         self.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
         self.font = [UIFont systemFontOfSize:TEXT_SIZE];
         self.keyboardAppearance = UIKeyboardAppearanceAlert;
@@ -262,20 +278,20 @@ typedef enum {
             
             switch (buttonStyle) {
                 case YIPopupTextViewButtonStyleRightCancel:
-                    buttonX = _popupView.bounds.size.width-TEXTVIEW_INSETS.right-(1-buttonRisingRatio)*CLOSE_IMAGE_WIDTH;
+                    buttonX = _popupView.bounds.size.width-_textViewInsets.right-(1-buttonRisingRatio)*CLOSE_IMAGE_WIDTH;
                     autoresizing = UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleBottomMargin;
                     break;
                 case YIPopupTextViewButtonStyleRightCancelAndDone:
-                    buttonX = _popupView.bounds.size.width-TEXTVIEW_INSETS.right-(2-buttonRisingRatio)*CLOSE_IMAGE_WIDTH;
+                    buttonX = _popupView.bounds.size.width-_textViewInsets.right-(2-buttonRisingRatio)*CLOSE_IMAGE_WIDTH;
                     autoresizing = UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleBottomMargin;
                     break;
                 default:
-                    buttonX = TEXTVIEW_INSETS.left-(buttonRisingRatio)*CLOSE_IMAGE_WIDTH;
+                    buttonX = _textViewInsets.left-(buttonRisingRatio)*CLOSE_IMAGE_WIDTH;
                     autoresizing = UIViewAutoresizingFlexibleRightMargin;
                     break;
             }
             
-            _closeButton.frame = CGRectMake(buttonX, TEXTVIEW_INSETS.top-buttonRisingRatio*CLOSE_IMAGE_WIDTH, CLOSE_IMAGE_WIDTH, CLOSE_IMAGE_WIDTH);
+            _closeButton.frame = CGRectMake(buttonX, _textViewInsets.top-buttonRisingRatio*CLOSE_IMAGE_WIDTH, CLOSE_IMAGE_WIDTH, CLOSE_IMAGE_WIDTH);
             _closeButton.showsTouchWhenHighlighted = YES;
             [_closeButton addTarget:self action:@selector(handleCloseButton:) forControlEvents:UIControlEventTouchUpInside];
             _closeButton.autoresizingMask = autoresizing;
@@ -301,14 +317,14 @@ typedef enum {
             
             CGFloat buttonX;
             if (buttonStyle == YIPopupTextViewButtonStyleLeftDone) {
-                buttonX  = buttonX = TEXTVIEW_INSETS.left-(buttonRisingRatio)*CLOSE_IMAGE_WIDTH;
+                buttonX  = buttonX = _textViewInsets.left-(buttonRisingRatio)*CLOSE_IMAGE_WIDTH;
             }else{
-                buttonX = buttonX = _popupView.bounds.size.width-TEXTVIEW_INSETS.right/2-CLOSE_IMAGE_WIDTH;
+                buttonX = buttonX = _popupView.bounds.size.width-_textViewInsets.right/2-CLOSE_IMAGE_WIDTH;
             }
 
             UIViewAutoresizing autoresizing = UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleBottomMargin;
             
-            _acceptButton.frame = CGRectMake(buttonX, TEXTVIEW_INSETS.top-buttonRisingRatio*CLOSE_IMAGE_WIDTH, CLOSE_IMAGE_WIDTH, CLOSE_IMAGE_WIDTH);
+            _acceptButton.frame = CGRectMake(buttonX, _textViewInsets.top-buttonRisingRatio*CLOSE_IMAGE_WIDTH, CLOSE_IMAGE_WIDTH, CLOSE_IMAGE_WIDTH);
             _acceptButton.showsTouchWhenHighlighted = YES;
             [_acceptButton addTarget:self action:@selector(handleAcceptButton:) forControlEvents:UIControlEventTouchUpInside];
             _acceptButton.autoresizingMask = autoresizing;
@@ -565,8 +581,8 @@ typedef enum {
     }
     
     [_countLabel sizeToFit];
-    _countLabel.frame = CGRectMake(_popupView.bounds.size.width-TEXTVIEW_INSETS.right-_countLabel.frame.size.width-COUNT_MARGIN,
-                                   _popupView.bounds.size.height-TEXTVIEW_INSETS.bottom-_countLabel.frame.size.height-COUNT_MARGIN, 
+    _countLabel.frame = CGRectMake(_popupView.bounds.size.width-_textViewInsets.right-_countLabel.frame.size.width-COUNT_MARGIN,
+                                   _popupView.bounds.size.height-_textViewInsets.bottom-_countLabel.frame.size.height-COUNT_MARGIN, 
                                    _countLabel.frame.size.width,
                                    _countLabel.frame.size.height);
 }
