@@ -34,6 +34,8 @@ popupTextView.text = self.textView.text;
 
 ```
 
+If you are using iOS7 fullscreen-layouted UIViewController and want to show popupTextView from its view under translucent UINavigationBar for example, call `-initWithPlaceHolder:maxCount:buttonStyle:doneButtonColor:textViewInsets:` and adjust its frame using `textViewInsets` on your own.
+
 ### YIPopupTextViewButtonStyle
 
 ```
@@ -45,7 +47,6 @@ typedef NS_ENUM(NSInteger, YIPopupTextViewButtonStyle) {
     YIPopupTextViewButtonStyleRightCancelAndDone,
     YIPopupTextViewButtonStyleLeftDone
 };
-
 ```
 
 For `caret-shifting`, it is better to use [YISwipeShiftCaret](https://github.com/inamiy/YISwipeShiftCaret) for all UITextField/UITextViews.
