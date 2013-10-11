@@ -1,6 +1,6 @@
 Pod::Spec.new do |s|
   s.name     = 'YIPopupTextView'
-  s.version  = '1.0.1'
+  s.version  = '1.0.2'
   s.license  = { :type => 'Beerware', :text => 'If we meet some day, and you think this stuff is worth it, you can buy me a beer in return.' }
   s.homepage = 'https://github.com/inamiy/YIPopupTextView'
   s.author   = { 'Yasuhiro Inami' => 'inamiy@gmail.com' }

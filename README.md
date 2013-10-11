@@ -1,4 +1,4 @@
-YIPopupTextView 1.0.1
+YIPopupTextView 1.0.2
 =====================
 
 facebook's post-like input text view for iOS.
