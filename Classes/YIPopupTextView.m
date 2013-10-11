@@ -175,23 +175,7 @@ typedef enum {
 - (id)initWithPlaceHolder:(NSString*)placeHolder
                  maxCount:(NSUInteger)maxCount
 {
-    return [self initWithPlaceHolder:placeHolder maxCount:maxCount buttonStyle:YIPopupTextViewButtonStyleRightCancel tintsDoneButton:NO];
-}
-
-- (id)initWithPlaceHolder:(NSString*)placeHolder
-                 maxCount:(NSUInteger)maxCount
-              buttonStyle:(YIPopupTextViewButtonStyle)buttonStyle
-          tintsDoneButton:(BOOL)tintsDoneButton
-{
-    UIColor* tintColor;
-    if (tintsDoneButton) {
-        tintColor = [UIColor colorWithRed:68.0/255.0 green:153.0/255.0 blue:34.0/255.0 alpha:1]; // #449922
-    }
-    else {
-        tintColor = [UIColor blackColor];
-    }
-    
-    return [self initWithPlaceHolder:placeHolder maxCount:maxCount buttonStyle:buttonStyle doneButtonColor:tintColor];
+    return [self initWithPlaceHolder:placeHolder maxCount:maxCount buttonStyle:YIPopupTextViewButtonStyleRightCancel doneButtonColor:nil];
 }
 
 - (id)initWithPlaceHolder:(NSString*)placeHolder

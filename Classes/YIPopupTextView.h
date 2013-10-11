@@ -40,23 +40,18 @@ typedef NS_ENUM(NSInteger, YIPopupTextViewButtonStyle) {
 @property (nonatomic, assign) BOOL caretShiftGestureEnabled;    // default = NO
 
 - (id)initWithPlaceHolder:(NSString*)placeHolder
-                 maxCount:(NSUInteger)maxCount;     // YIPopupTextViewButtonStyleRightCancel & tintsDoneButton=NO
+                 maxCount:(NSUInteger)maxCount;     // YIPopupTextViewButtonStyleRightCancel
 
 - (id)initWithPlaceHolder:(NSString*)placeHolder
                  maxCount:(NSUInteger)maxCount
               buttonStyle:(YIPopupTextViewButtonStyle)buttonStyle
-          tintsDoneButton:(BOOL)tintsDoneButton;    // tints doneButton to green or black color
-
-- (id)initWithPlaceHolder:(NSString*)placeHolder
-                 maxCount:(NSUInteger)maxCount
-              buttonStyle:(YIPopupTextViewButtonStyle)buttonStyle
-          doneButtonColor:(UIColor*)doneColor;      // any doneButton color
+          doneButtonColor:(UIColor*)doneColor;      // set doneButtonColor=nil to show preset green color
 
 - (id)initWithPlaceHolder:(NSString*)placeHolder
                  maxCount:(NSUInteger)maxCount
               buttonStyle:(YIPopupTextViewButtonStyle)buttonStyle
           doneButtonColor:(UIColor*)doneButtonColor
-           textViewInsets:(UIEdgeInsets)textViewInsets;
+           textViewInsets:(UIEdgeInsets)textViewInsets; // use textViewInsets to adjust frame for iOS7 fullscreen-layout
 
 - (void)showInView:(UIView*)view;
 - (void)dismiss;
