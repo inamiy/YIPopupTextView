@@ -39,22 +39,22 @@
     CGContextRef context = UIGraphicsGetCurrentContext();
     CGContextClearRect(context, CGRectMake(0, 0, size.width, size.height));
     
-    float cx = size.width/2;  
-    float cy = size.height/2;  
+    float cx = size.width/2;
+    float cy = size.height/2;
     
     float radius = size.width > size.height ? size.height/2 : size.height/2;
     radius -= IS_IPAD ? 8 : 4;
     
-    CGRect rectEllipse = CGRectMake(cx - radius, cy - radius, radius*2, radius*2);  
+    CGRect rectEllipse = CGRectMake(cx - radius, cy - radius, radius*2, radius*2);
     
     if (fillColor) {
-        [fillColor setFill];  
-        CGContextFillEllipseInRect(context, rectEllipse); 
+        [fillColor setFill];
+        CGContextFillEllipseInRect(context, rectEllipse);
     }
     
     if (strokeColor) {
-        [strokeColor setStroke];  
-        CGContextSetLineWidth(context, IS_IPAD ? 6.0 : 3.0);  
+        [strokeColor setStroke];
+        CGContextSetLineWidth(context, IS_IPAD ? 6.0 : 3.0);
         CGFloat lineLength  = radius/2.5;
         CGContextMoveToPoint(context, cx-lineLength, cy-lineLength);
         CGContextAddLineToPoint(context, cx+lineLength, cy+lineLength);
@@ -70,7 +70,7 @@
     }
     
     if (strokeColor) {
-        CGContextStrokeEllipseInRect(context, rectEllipse);  		
+        CGContextStrokeEllipseInRect(context, rectEllipse);
     }
     
     UIImage* image = UIGraphicsGetImageFromCurrentImageContext();
@@ -305,7 +305,7 @@ typedef enum {
             }else{
                 buttonX = buttonX = _popupView.bounds.size.width-_textViewInsets.right/2-CLOSE_IMAGE_WIDTH;
             }
-
+            
             UIViewAutoresizing autoresizing = UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleBottomMargin;
             
             _acceptButton.frame = CGRectMake(buttonX, _textViewInsets.top-buttonRisingRatio*CLOSE_IMAGE_WIDTH, CLOSE_IMAGE_WIDTH, CLOSE_IMAGE_WIDTH);
@@ -475,12 +475,12 @@ typedef enum {
     
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(didReceiveKeyboardWillShowNotification:)
-                                                 name:UIKeyboardWillShowNotification 
+                                                 name:UIKeyboardWillShowNotification
                                                object:nil];
     
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(didReceiveTextDidChangeNotification:)
-                                                 name:UITextViewTextDidChangeNotification 
+                                                 name:UITextViewTextDidChangeNotification
                                                object:nil];
 }
 
@@ -566,7 +566,7 @@ typedef enum {
     
     [_countLabel sizeToFit];
     _countLabel.frame = CGRectMake(_popupView.bounds.size.width-_textViewInsets.right-_countLabel.frame.size.width-COUNT_MARGIN,
-                                   _popupView.bounds.size.height-_textViewInsets.bottom-_countLabel.frame.size.height-COUNT_MARGIN, 
+                                   _popupView.bounds.size.height-_textViewInsets.bottom-_countLabel.frame.size.height-COUNT_MARGIN,
                                    _countLabel.frame.size.width,
                                    _countLabel.frame.size.height);
 }
@@ -585,7 +585,7 @@ typedef enum {
     [self dismissWithCancelled:NO];
 }
 
-#pragma mark 
+#pragma mark
 
 #pragma mark Gestures
 
@@ -649,10 +649,10 @@ typedef enum {
 //{
 //    // recognize textView's scrolling gesture if _panGesture is vertically panning
 //    if (gestureRecognizer == _panGesture && [_panGesture translationInView:_panGesture.view].x == 0.0) {
-//        
+//
 //        return YES;
 //    }
-//    
+//
 //    return NO;
 //}
 
