@@ -39,8 +39,15 @@ typedef NS_ENUM(NSInteger, YIPopupTextViewButtonStyle) {
 
 @property (nonatomic, assign) BOOL caretShiftGestureEnabled;    // default = NO
 
+@property (nonatomic) CGFloat topUIBarMargin;       // set statusBar+navBar height for iOS7 fullscreen size manually
+@property (nonatomic) CGFloat bottomUIBarMargin;    // set tabBar+toolbar height for iOS7 fullscreen size manually
+
 - (id)initWithPlaceHolder:(NSString*)placeHolder
                  maxCount:(NSUInteger)maxCount;     // YIPopupTextViewButtonStyleRightCancel
+
+- (id)initWithPlaceHolder:(NSString*)placeHolder
+                 maxCount:(NSUInteger)maxCount
+              buttonStyle:(YIPopupTextViewButtonStyle)buttonStyle;
 
 - (id)initWithPlaceHolder:(NSString*)placeHolder
                  maxCount:(NSUInteger)maxCount
@@ -51,9 +58,11 @@ typedef NS_ENUM(NSInteger, YIPopupTextViewButtonStyle) {
                  maxCount:(NSUInteger)maxCount
               buttonStyle:(YIPopupTextViewButtonStyle)buttonStyle
           doneButtonColor:(UIColor*)doneButtonColor
-           textViewInsets:(UIEdgeInsets)textViewInsets; // use textViewInsets to adjust frame for iOS7 fullscreen-layout
+           textViewInsets:(UIEdgeInsets)textViewInsets;
 
 - (void)showInView:(UIView*)view;
+- (void)showInViewController:(UIViewController*)viewController;     // automatically adjusts top/bottomUIBarMargin for iOS7
+
 - (void)dismiss;
 
 @end

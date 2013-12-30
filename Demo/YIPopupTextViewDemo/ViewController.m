@@ -98,57 +98,17 @@
 - (IBAction)handleEditButton:(id)sender 
 {
     BOOL editable = YES;
-    CGFloat statusBarHeight = 20;
-    CGFloat defaultInset = (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad ? 30 : 15);
     
-    YIPopupTextView* popupTextView;
-    
-#if defined(__IPHONE_7_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_7_0
-    
-    if (IS_IOS_AT_LEAST(@"7.0")) {
-        UINavigationBar* navBar = self.navigationController.navigationBar;
-        UITabBar* tabBar = self.tabBarController.tabBar;
-        
-        CGFloat navBarHeight = (navBar && !navBar.hidden ? navBar.bounds.size.height : 0);
-        CGFloat tabBarHeight = (tabBar && !tabBar.hidden && !editable ? tabBar.bounds.size.height : 0);
-        
-        // For iOS7 flat-design, set textViewInsets manually to adjust frame for fullscreen size
-        popupTextView =
-        [[YIPopupTextView alloc] initWithPlaceHolder:@"input here"
-                                            maxCount:1000
-                                         buttonStyle:YIPopupTextViewButtonStyleRightCancelAndDone
-                                     doneButtonColor:nil // default color
-                                      textViewInsets:UIEdgeInsetsMake(defaultInset+statusBarHeight+navBarHeight,
-                                                                      defaultInset,
-                                                                      defaultInset+tabBarHeight,
-                                                                      defaultInset)];
-    }
-    else {
-        popupTextView =
-        [[YIPopupTextView alloc] initWithPlaceHolder:@"input here"
-                                            maxCount:1000
-                                         buttonStyle:YIPopupTextViewButtonStyleRightCancelAndDone
-                                     doneButtonColor:nil];
-    }
-    
-#else
-    
-    // NOTE: maxCount = 0 to hide count
-    //popupTextView = [[YIPopupTextView alloc] initWithPlaceHolder:@"input here" maxCount:1000];
-    
-    popupTextView =
+    YIPopupTextView* popupTextView =
     [[YIPopupTextView alloc] initWithPlaceHolder:@"input here"
                                         maxCount:1000
-                                     buttonStyle:YIPopupTextViewButtonStyleRightCancelAndDone
-                                 doneButtonColor:nil];
-    
-#endif
-    
+                                     buttonStyle:YIPopupTextViewButtonStyleRightCancelAndDone];
     popupTextView.delegate = self;
-    popupTextView.caretShiftGestureEnabled = YES;   // default = NO
+    popupTextView.caretShiftGestureEnabled = YES;       // default = NO. using YISwipeShiftCaret is recommended.
     popupTextView.text = self.textView.text;
     popupTextView.editable = editable;                  // set editable=NO to show without keyboard
-    [popupTextView showInView:self.view];
+    
+    [popupTextView showInViewController:self];
     
     //
     // NOTE:

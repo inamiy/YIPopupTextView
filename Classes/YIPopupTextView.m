@@ -8,8 +8,15 @@
 
 #import "YIPopupTextView.h"
 
-#define IS_ARC              (__has_feature(objc_arc))
 #define IS_IPAD             (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad)
+#define IS_PORTRAIT         UIInterfaceOrientationIsPortrait([UIApplication sharedApplication].statusBarOrientation)
+#define IS_IOS_AT_LEAST(ver)    ([[[UIDevice currentDevice] systemVersion] compare:ver] != NSOrderedAscending)
+
+#if defined(__IPHONE_7_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_7_0
+#define IS_FLAT_DESIGN          IS_IOS_AT_LEAST(@"7.0")
+#else
+#define IS_FLAT_DESIGN          NO
+#endif
 
 #define TEXTVIEW_INSETS     (IS_IPAD ? UIEdgeInsetsMake(30, 30, 30, 30) : UIEdgeInsetsMake(15, 15, 15, 15))
 #define TEXT_SIZE           (IS_IPAD ? 32 : 16)
@@ -139,6 +146,8 @@ typedef enum {
 
 @interface YIPopupTextView () <UIGestureRecognizerDelegate>
 
+@property (nonatomic, weak) UIViewController* viewController;
+
 - (void)updateCount;
 
 - (void)startObservingNotifications;
@@ -175,7 +184,14 @@ typedef enum {
 - (id)initWithPlaceHolder:(NSString*)placeHolder
                  maxCount:(NSUInteger)maxCount
 {
-    return [self initWithPlaceHolder:placeHolder maxCount:maxCount buttonStyle:YIPopupTextViewButtonStyleRightCancel doneButtonColor:nil];
+    return [self initWithPlaceHolder:placeHolder maxCount:maxCount buttonStyle:YIPopupTextViewButtonStyleRightCancel];
+}
+
+- (id)initWithPlaceHolder:(NSString*)placeHolder
+                 maxCount:(NSUInteger)maxCount
+              buttonStyle:(YIPopupTextViewButtonStyle)buttonStyle
+{
+    return [self initWithPlaceHolder:placeHolder maxCount:maxCount buttonStyle:buttonStyle doneButtonColor:nil];
 }
 
 - (id)initWithPlaceHolder:(NSString*)placeHolder
@@ -210,11 +226,8 @@ typedef enum {
         _backgroundView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
         
         _popupView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 320, 240)];
-        _popupView.autoresizingMask = UIViewAutoresizingFlexibleWidth; // height will be set at KeyboardWillShow
+        _popupView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
         [_backgroundView addSubview:_popupView];
-#if !IS_ARC
-        [_popupView release];
-#endif
         
         self.placeholder = placeHolder;
         self.frame = UIEdgeInsetsInsetRect(_popupView.frame, _textViewInsets);
@@ -226,9 +239,6 @@ typedef enum {
         self.layer.cornerRadius = 10;
         self.backgroundColor = [UIColor whiteColor];
         [_popupView addSubview:self];
-#if !IS_ARC
-        [self release];
-#endif
         
         if (maxCount > 0) {
             _countLabel = [[UILabel alloc] initWithFrame:CGRectZero];
@@ -238,9 +248,6 @@ typedef enum {
             _countLabel.textColor = [UIColor lightGrayColor];
             _countLabel.font = [UIFont boldSystemFontOfSize:COUNT_SIZE];
             [_popupView addSubview:_countLabel];
-#if !IS_ARC
-            [_countLabel release];
-#endif
         }
         
         CGFloat buttonRisingRatio = 0.3;
@@ -325,10 +332,6 @@ typedef enum {
     
     // comment-out: don't call endGeneratingDeviceOrientationNotifications twice
     //[self stopObservingNotifications];
-    
-#if !IS_ARC
-    [super dealloc];
-#endif
 }
 
 #pragma mark -
@@ -355,8 +358,6 @@ typedef enum {
     if (caretShiftGestureEnabled) {
         if (!_panGesture) {
             _panGesture = [[UIPanGestureRecognizer alloc] initWithTarget:self action:@selector(handlePanGesture:)];
-//            _panGesture.delegate = self;
-//            [self addGestureRecognizer:_panGesture];
             [_backgroundView addGestureRecognizer:_panGesture];
         }
     }
@@ -396,9 +397,6 @@ typedef enum {
     _backgroundView.alpha = 0;
     _backgroundView.frame = frame;
     [targetView addSubview:_backgroundView];
-#if !IS_ARC
-    [_backgroundView release];
-#endif
     
     [self updateCount];
     
@@ -417,11 +415,21 @@ typedef enum {
         _backgroundView.alpha = 1;
     }];
     
-    if (!self.editable) {
-        _popupView.frame = _backgroundView.bounds;
-    }
+    [self _changePopupViewFrameWithNotification:nil];
     
     [self becomeFirstResponder];
+}
+
+- (void)showInViewController:(UIViewController*)viewController
+{
+    _viewController = viewController;
+    
+    if ([viewController.view isKindOfClass:[UIScrollView class]]) {
+        [self showInView:viewController.view.superview];
+    }
+    else {
+        [self showInView:viewController.view];
+    }
 }
 
 - (void)dismiss
@@ -431,11 +439,12 @@ typedef enum {
 
 - (void)dismissWithCancelled:(BOOL)cancelled
 {
+    // stop observing before resignFirstResponder, for not to adjust frame while dismissing
+    [self stopObservingNotifications];
+    
     if ([self isFirstResponder]) {
         [self resignFirstResponder];
     }
-    
-    [self stopObservingNotifications];
     
     if ([self.delegate respondsToSelector:@selector(popupTextView:willDismissWithText:cancelled:)]) {
         [self.delegate popupTextView:self willDismissWithText:self.text cancelled:cancelled];
@@ -468,79 +477,127 @@ typedef enum {
 {
     [[UIDevice currentDevice] beginGeneratingDeviceOrientationNotifications];
     
+    //
+    // NOTE:
+    // UIKeyboardWillShowNotification is not called when using iPad with splitted keyboard,
+    // so use willChangeFrameNotification instead.
+    //
     [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(didReceiveOrientationDidChangeNotification:)
-                                                 name:UIDeviceOrientationDidChangeNotification
+                                             selector:@selector(onKeyboardWillChangeFrameNotification:)
+                                                 name:UIKeyboardWillChangeFrameNotification
                                                object:nil];
     
-    [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(didReceiveKeyboardWillShowNotification:)
-                                                 name:UIKeyboardWillShowNotification
-                                               object:nil];
+    // CAUTION: UIKeyboardDidChangeFrameNotification returns wrong keyboardRect when using iPhone + Japanese keyboard
+    // NOTE: required for iPad + splitted keyboard
+    if (IS_IPAD) {
+        [[NSNotificationCenter defaultCenter] addObserver:self
+                                                 selector:@selector(onKeyboardDidChangeFrameNotification:)
+                                                     name:UIKeyboardDidChangeFrameNotification
+                                                   object:nil];
+    }
     
     [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(didReceiveTextDidChangeNotification:)
+                                             selector:@selector(onTextDidChangeNotification:)
                                                  name:UITextViewTextDidChangeNotification
                                                object:nil];
 }
 
 - (void)stopObservingNotifications
 {
-    [[NSNotificationCenter defaultCenter] removeObserver:self name:UIDeviceOrientationDidChangeNotification object:nil];
-    [[NSNotificationCenter defaultCenter] removeObserver:self name:UIKeyboardWillShowNotification object:nil];
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:UIKeyboardWillChangeFrameNotification object:nil];
+    
+    if (IS_IPAD) {
+        [[NSNotificationCenter defaultCenter] removeObserver:self name:UIKeyboardDidChangeFrameNotification object:nil];
+    }
+    
     [[NSNotificationCenter defaultCenter] removeObserver:self name:UITextViewTextDidChangeNotification object:nil];
     
     [[UIDevice currentDevice] endGeneratingDeviceOrientationNotifications];
 }
 
-// for editable = NO
-- (void)didReceiveOrientationDidChangeNotification:(NSNotification*)notification
+- (void)onKeyboardWillChangeFrameNotification:(NSNotification*)notification
 {
-    if (!self.editable) {
-        _popupView.frame = _backgroundView.bounds;
-    }
+    [self _changePopupViewFrameWithNotification:notification];
 }
 
-// for editable = YES
-- (void)didReceiveKeyboardWillShowNotification:(NSNotification*)notification
+- (void)onKeyboardDidChangeFrameNotification:(NSNotification*)notification
+{
+    [self _changePopupViewFrameWithNotification:notification];
+}
+
+- (void)_changePopupViewFrameWithNotification:(NSNotification*)notification
 {
     if (!_backgroundView.superview) return;
     
-    NSDictionary* userInfo = [notification userInfo];
-    
-    CGRect keyboardRect = [[userInfo objectForKey:UIKeyboardFrameEndUserInfoKey] CGRectValue];
-    //NSLog(@"keyboardRect = %f %f %f %f",keyboardRect.origin.x,keyboardRect.origin.y,keyboardRect.size.width,keyboardRect.size.height);
-    
-    CGPoint origin = [self.window convertPoint:_backgroundView.frame.origin fromView:_backgroundView];
-    //NSLog(@"origin = %f %f",origin.x,origin.y);
-    
-    UIInterfaceOrientation orientation = [UIApplication sharedApplication].statusBarOrientation;
+    CGFloat topMargin = _topUIBarMargin;
+    CGFloat bottomMargin = _bottomUIBarMargin;
     
     CGFloat popupViewHeight = 0;
-    switch (orientation) {
-        case UIInterfaceOrientationPortrait:
-            popupViewHeight = keyboardRect.origin.y - origin.y;
-            break;
-        case UIInterfaceOrientationPortraitUpsideDown:
-            popupViewHeight = origin.y - keyboardRect.size.height;
-            break;
-        case UIInterfaceOrientationLandscapeLeft:
-            popupViewHeight = keyboardRect.origin.x - origin.x;
-            break;
-        case UIInterfaceOrientationLandscapeRight:
-            popupViewHeight = origin.x - keyboardRect.size.width;
-            break;
-        default:
-            break;
+    
+    // automatically adjusts top/bottomUIBarMargin for iOS7 fullscreen size
+    if (_viewController && IS_FLAT_DESIGN) {
+        UINavigationBar* navBar = _viewController.navigationController.navigationBar;
+        UIToolbar* toolbar = _viewController.navigationController.toolbar;
+        UITabBar* tabBar = _viewController.tabBarController.tabBar;
+        
+        CGFloat statusBarHeight = (IS_PORTRAIT ? [UIApplication sharedApplication].statusBarFrame.size.height : [UIApplication sharedApplication].statusBarFrame.size.width);
+        CGFloat navBarHeight = (navBar && !navBar.hidden ? navBar.bounds.size.height : 0);
+        CGFloat toolbarHeight = (toolbar && !toolbar.hidden ? toolbar.bounds.size.height : 0);
+        CGFloat tabBarHeight = (tabBar && !tabBar.hidden ? tabBar.bounds.size.height : 0);
+        
+        if (topMargin == 0.0) {
+            topMargin = statusBarHeight+navBarHeight;
+        }
+        if (bottomMargin == 0.0) {
+            bottomMargin = toolbarHeight+tabBarHeight;
+        }
     }
     
+    if (notification) {
+        NSDictionary* userInfo = [notification userInfo];
+        
+        CGRect keyboardRect = [[userInfo objectForKey:UIKeyboardFrameEndUserInfoKey] CGRectValue];
+        if (CGRectEqualToRect(keyboardRect, CGRectZero)) {
+            keyboardRect = [[userInfo objectForKey:UIKeyboardFrameBeginUserInfoKey] CGRectValue];
+        }
+        
+        CGPoint bgOrigin = [self.window convertPoint:CGPointZero fromView:_backgroundView];
+        
+        UIInterfaceOrientation orientation = [UIApplication sharedApplication].statusBarOrientation;
+        
+        switch (orientation) {
+            case UIInterfaceOrientationPortrait:
+                popupViewHeight = keyboardRect.origin.y - bgOrigin.y - topMargin;
+                break;
+            case UIInterfaceOrientationPortraitUpsideDown:
+                popupViewHeight = bgOrigin.y - keyboardRect.origin.y - keyboardRect.size.height - topMargin;
+                break;
+            case UIInterfaceOrientationLandscapeLeft:
+                // keyboard at portrait-right
+                popupViewHeight = keyboardRect.origin.x - bgOrigin.x - topMargin;
+                break;
+            case UIInterfaceOrientationLandscapeRight:
+                // keyboard at portrait-left
+                popupViewHeight = bgOrigin.x - keyboardRect.origin.x - keyboardRect.size.width - topMargin;
+                break;
+            default:
+                break;
+        }
+    }
+    else {
+        popupViewHeight = _backgroundView.bounds.size.height;
+    }
+    
+    popupViewHeight = MIN(popupViewHeight, _backgroundView.bounds.size.height-topMargin-bottomMargin);
+    
     CGRect frame = _backgroundView.bounds;
+    frame.origin.y = topMargin;
     frame.size.height = popupViewHeight;
     _popupView.frame = frame;
     
 }
 
-- (void)didReceiveTextDidChangeNotification:(NSNotification*)notification
+- (void)onTextDidChangeNotification:(NSNotification*)notification
 {
     if ([notification object] != self) return;
     
@@ -644,17 +701,6 @@ typedef enum {
             break;
     }
 }
-
-//- (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherGestureRecognizer
-//{
-//    // recognize textView's scrolling gesture if _panGesture is vertically panning
-//    if (gestureRecognizer == _panGesture && [_panGesture translationInView:_panGesture.view].x == 0.0) {
-//
-//        return YES;
-//    }
-//
-//    return NO;
-//}
 
 #pragma mark -
 
