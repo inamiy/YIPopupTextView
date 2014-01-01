@@ -1,9 +1,16 @@
-YIPopupTextView 1.0.2
+YIPopupTextView 1.1.0
 =====================
 
 facebook's post-like input text view for iOS.
+(Supported iPad splitted-keyboard in ver 1.1.0)
 
-<img src="https://raw.github.com/inamiy/YIPopupTextView/master/Screenshots/screenshot1.png" alt="ScreenShot1" width="225px" style="width:225px;" /> <img src="https://raw.github.com/inamiy/YIPopupTextView/master/Screenshots/screenshot2.png" alt="ScreenShot1" width="225px" style="width:225px;" />
+### iOS7
+
+<img src="https://raw.github.com/inamiy/YIPopupTextView/master/Screenshots/screenshot3.png" alt="ScreenShot" width="225px" style="width:225px;" /> <img src="https://raw.github.com/inamiy/YIPopupTextView/master/Screenshots/screenshot4.png" alt="ScreenShot" width="300px" style="width:300px;" />
+
+### iOS6
+
+<img src="https://raw.github.com/inamiy/YIPopupTextView/master/Screenshots/screenshot1.png" alt="ScreenShot" width="225px" style="width:225px;" /> <img src="https://raw.github.com/inamiy/YIPopupTextView/master/Screenshots/screenshot2.png" alt="ScreenShot" width="225px" style="width:225px;" />
 
 Install via [CocoaPods](http://cocoapods.org/)
 ----------
@@ -21,7 +28,9 @@ popupTextView.delegate = self;
 popupTextView.caretShiftGestureEnabled = YES;   // default = NO
 popupTextView.text = self.textView.text;
 //popupTextView.editable = NO;                  // set editable=NO to show without keyboard
-[popupTextView showInView:self.view];
+
+//[popupTextView showInView:self.view];
+[popupTextView showInViewController:self]; // recommended, especially for iOS7
 
 //
 // NOTE:
@@ -33,8 +42,6 @@ popupTextView.text = self.textView.text;
 //
 
 ```
-
-If you are using iOS7 fullscreen-layouted UIViewController and want to show popupTextView from its view under translucent UINavigationBar for example, call `-initWithPlaceHolder:maxCount:buttonStyle:doneButtonColor:textViewInsets:` and adjust its frame using `textViewInsets` on your own.
 
 ### YIPopupTextViewButtonStyle
 
