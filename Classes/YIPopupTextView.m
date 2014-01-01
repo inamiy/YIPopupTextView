@@ -10,13 +10,6 @@
 
 #define IS_IPAD             (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad)
 #define IS_PORTRAIT         UIInterfaceOrientationIsPortrait([UIApplication sharedApplication].statusBarOrientation)
-#define IS_IOS_AT_LEAST(ver)    ([[[UIDevice currentDevice] systemVersion] compare:ver] != NSOrderedAscending)
-
-#if defined(__IPHONE_7_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_7_0
-#define IS_FLAT_DESIGN          IS_IOS_AT_LEAST(@"7.0")
-#else
-#define IS_FLAT_DESIGN          NO
-#endif
 
 #define TEXTVIEW_INSETS     (IS_IPAD ? UIEdgeInsetsMake(30, 30, 30, 30) : UIEdgeInsetsMake(15, 15, 15, 15))
 #define TEXT_SIZE           (IS_IPAD ? 32 : 16)
@@ -534,8 +527,10 @@ typedef enum {
     
     CGFloat popupViewHeight = 0;
     
+#if defined(__IPHONE_7_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_7_0
+    
     // automatically adjusts top/bottomUIBarMargin for iOS7 fullscreen size
-    if (_viewController && IS_FLAT_DESIGN) {
+    if (_viewController) {
         UINavigationBar* navBar = _viewController.navigationController.navigationBar;
         UIToolbar* toolbar = _viewController.navigationController.toolbar;
         UITabBar* tabBar = _viewController.tabBarController.tabBar;
@@ -545,14 +540,16 @@ typedef enum {
         CGFloat toolbarHeight = (toolbar && !toolbar.hidden ? toolbar.bounds.size.height : 0);
         CGFloat tabBarHeight = (tabBar && !tabBar.hidden ? tabBar.bounds.size.height : 0);
         
-        if (topMargin == 0.0) {
+        if (topMargin == 0.0 && (_viewController.edgesForExtendedLayout & UIRectEdgeTop)) {
             topMargin = statusBarHeight+navBarHeight;
         }
-        if (bottomMargin == 0.0) {
+        if (bottomMargin == 0.0 && (_viewController.edgesForExtendedLayout & UIRectEdgeBottom)) {
             bottomMargin = toolbarHeight+tabBarHeight;
         }
     }
     
+#endif
+
     if (notification) {
         NSDictionary* userInfo = [notification userInfo];
         
