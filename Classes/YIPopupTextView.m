@@ -301,9 +301,9 @@ typedef enum {
             
             CGFloat buttonX;
             if (buttonStyle == YIPopupTextViewButtonStyleLeftDone) {
-                buttonX  = buttonX = _textViewInsets.left-(buttonRisingRatio)*CLOSE_IMAGE_WIDTH;
+                buttonX = _textViewInsets.left-(buttonRisingRatio)*CLOSE_IMAGE_WIDTH;
             }else{
-                buttonX = buttonX = _popupView.bounds.size.width-_textViewInsets.right/2-CLOSE_IMAGE_WIDTH;
+                buttonX = _popupView.bounds.size.width-_textViewInsets.right/2-CLOSE_IMAGE_WIDTH;
             }
             
             UIViewAutoresizing autoresizing = UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleBottomMargin;
