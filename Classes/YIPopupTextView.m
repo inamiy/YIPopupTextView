@@ -243,7 +243,11 @@ typedef enum {
         if (maxCount > 0) {
             _countLabel = [[UILabel alloc] initWithFrame:CGRectZero];
             _countLabel.autoresizingMask = UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleTopMargin;
-            _countLabel.textAlignment = UITextAlignmentRight;
+#if (__IPHONE_OS_VERSION_MAX_ALLOWED < __IPHONE_6_0)
+			_countLabel.textAlignment = UITextAlignmentRight;
+#else
+			_countLabel.textAlignment = NSTextAlignmentRight;
+#endif
             _countLabel.backgroundColor = [UIColor clearColor];
             _countLabel.textColor = [UIColor lightGrayColor];
             _countLabel.font = [UIFont boldSystemFontOfSize:COUNT_SIZE];
@@ -615,7 +619,7 @@ typedef enum {
 - (void)updateCount
 {
     NSUInteger textCount = [self.text length];
-    _countLabel.text = [NSString stringWithFormat:@"%d", _maxCount-textCount];
+    _countLabel.text = [NSString stringWithFormat:@"%lu", (unsigned long)_maxCount-textCount];
     
     if (_maxCount > 0 && textCount > _maxCount) {
         _acceptButton.enabled = NO;

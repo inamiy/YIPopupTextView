@@ -6,7 +6,7 @@ Pod::Spec.new do |s|
   s.author   = { 'Yasuhiro Inami' => 'inamiy@gmail.com' }
   s.summary  = "facebook's post-like input text view for iOS."
   s.screenshots = [ "https://raw.github.com/inamiy/YIPopupTextView/master/Screenshots/screenshot1.png", "https://raw.github.com/inamiy/YIPopupTextView/master/Screenshots/screenshot2.png" ]
-  s.source   = { :git => 'https://github.com/inamiy/YIPopupTextView.git', :tag => "#{s.version}" }
+  s.source   = { :git => 'https://github.com/wbcyclist/YIPopupTextView.git', :tag => "#{s.version}" }
   s.source_files = 'Classes/*.{h,m}'
   s.requires_arc = true
   s.platform = :ios, '5.0'
