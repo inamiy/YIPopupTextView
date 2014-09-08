@@ -88,7 +88,8 @@
 		paragraphStyle.lineBreakMode = NSLineBreakByWordWrapping;
 		paragraphStyle.alignment = NSTextAlignmentLeft;
 		NSDictionary *attributes = @{ NSFontAttributeName: self.font,
-									  NSParagraphStyleAttributeName: paragraphStyle };
+                                      NSForegroundColorAttributeName: self.placeholderColor,
+                                      NSParagraphStyleAttributeName: paragraphStyle };
 		[_placeholder drawInRect:drawInRect withAttributes:attributes];
 #endif
 	}
