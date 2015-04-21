@@ -342,6 +342,16 @@ typedef enum {
 
 #pragma mark Accessors
 
+- (NSInteger)maxCount {
+    return _maxCount;
+}
+
+- (void)setMaxCount:(NSInteger)maxCount {
+     _maxCount = maxCount;
+    [self updateCount];
+}
+
+
 - (UIColor *)outerBackgroundColor
 {
     return _backgroundView.backgroundColor;
@@ -619,7 +629,8 @@ typedef enum {
 - (void)updateCount
 {
     NSUInteger textCount = [self.text length];
-    _countLabel.text = [NSString stringWithFormat:@"%lu", (unsigned long)_maxCount-textCount];
+    NSInteger deltaCount = _maxCount - textCount;
+    _countLabel.text = [NSString stringWithFormat:@"%d",deltaCount];
     
     if (_maxCount > 0 && textCount > _maxCount) {
         _acceptButton.enabled = NO;
