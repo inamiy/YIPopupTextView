@@ -1,5 +1,5 @@
-YIPopupTextView 1.1.1
-=====================
+YIPopupTextView
+===============
 
 facebook's post-like input text view for iOS.
 (Supported iPad splitted-keyboard in ver 1.1.0)
