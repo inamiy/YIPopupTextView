@@ -342,7 +342,7 @@ typedef enum {
 
 #pragma mark Accessors
 
-- (NSInteger)maxCount {
+- (NSUInteger)maxCount {
     return _maxCount;
 }
 
