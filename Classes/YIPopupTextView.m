@@ -346,11 +346,10 @@ typedef enum {
     return _maxCount;
 }
 
-- (void)setMaxCount:(NSInteger)maxCount {
+- (void)setMaxCount:(NSUInteger)maxCount {
      _maxCount = maxCount;
     [self updateCount];
 }
-
 
 - (UIColor *)outerBackgroundColor
 {
@@ -630,7 +629,7 @@ typedef enum {
 {
     NSUInteger textCount = [self.text length];
     NSInteger deltaCount = _maxCount - textCount;
-    _countLabel.text = [NSString stringWithFormat:@"%d",deltaCount];
+    _countLabel.text = [NSString stringWithFormat:@"%@",@(deltaCount)];
     
     if (_maxCount > 0 && textCount > _maxCount) {
         _acceptButton.enabled = NO;
