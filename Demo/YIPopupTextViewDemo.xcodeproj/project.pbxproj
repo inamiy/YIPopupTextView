@@ -21,8 +21,8 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		0170871C34BF449B965C8351 /* Pods.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = Pods.xcconfig; path = Pods/Pods.xcconfig; sourceTree = SOURCE_ROOT; };
 		1F0D474A1871C507003381F2 /* Default-568h@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Default-568h@2x.png"; sourceTree = "<group>"; };
+		2FA1681FC12D2621EC3EDBA1 /* Pods.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = Pods.debug.xcconfig; path = "Pods/Target Support Files/Pods/Pods.debug.xcconfig"; sourceTree = "<group>"; };
 		48C34CA314D920D40012AB8B /* YIPopupTextViewDemo.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = YIPopupTextViewDemo.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		48C34CA714D920D40012AB8B /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
 		48C34CA914D920D40012AB8B /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
@@ -38,6 +38,8 @@
 		48C34CBD14D920D50012AB8B /* ViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ViewController.m; sourceTree = "<group>"; };
 		48C34CD014D923DE0012AB8B /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = System/Library/Frameworks/QuartzCore.framework; sourceTree = SDKROOT; };
 		A3F71381404F4BE99FA0B57B /* libPods.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libPods.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		FA0205B172C8DF99B720AF2C /* Pods.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = Pods.debug.xcconfig; path = "Pods/Target Support Files/Pods/Pods.debug.xcconfig"; sourceTree = "<group>"; };
+		FD1D49A2BA9F61EBC02E70EB /* Pods.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = Pods.release.xcconfig; path = "Pods/Target Support Files/Pods/Pods.release.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -56,13 +58,22 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		35AC4E1C30CBEB58026AE9BB /* Pods */ = {
+			isa = PBXGroup;
+			children = (
+				2FA1681FC12D2621EC3EDBA1 /* Pods.debug.xcconfig */,
+				EC6D7C6A4273BDFEBABA5F39 /* Pods.release.xcconfig */,
+			);
+			name = Pods;
+			sourceTree = "<group>";
+		};
 		48C34C9814D920D40012AB8B = {
 			isa = PBXGroup;
 			children = (
 				48C34CAD14D920D40012AB8B /* YIPopupTextViewDemo */,
 				48C34CA614D920D40012AB8B /* Frameworks */,
 				48C34CA414D920D40012AB8B /* Products */,
-				0170871C34BF449B965C8351 /* Pods.xcconfig */,
+				56EF6208384F19B80BECF912 /* Pods */,
 			);
 			sourceTree = "<group>";
 		};
@@ -109,6 +120,15 @@
 				48C34CB514D920D50012AB8B /* YIPopupTextViewDemo-Prefix.pch */,
 			);
 			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
+		56EF6208384F19B80BECF912 /* Pods */ = {
+			isa = PBXGroup;
+			children = (
+				FA0205B172C8DF99B720AF2C /* Pods.debug.xcconfig */,
+				FD1D49A2BA9F61EBC02E70EB /* Pods.release.xcconfig */,
+			);
+			name = Pods;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -199,7 +219,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "\"${SRCROOT}/Pods/Pods-resources.sh\"\n";
+			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods/Pods-resources.sh\"\n";
 		};
 /* End PBXShellScriptBuildPhase section */
 
@@ -283,12 +303,12 @@
 		};
 		48C34CC214D920D50012AB8B /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 0170871C34BF449B965C8351 /* Pods.xcconfig */;
+			baseConfigurationReference = FA0205B172C8DF99B720AF2C /* Pods.debug.xcconfig */;
 			buildSettings = {
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "YIPopupTextViewDemo/YIPopupTextViewDemo-Prefix.pch";
 				INFOPLIST_FILE = "YIPopupTextViewDemo/YIPopupTextViewDemo-Info.plist";
-				IPHONEOS_DEPLOYMENT_TARGET = 5.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				TARGETED_DEVICE_FAMILY = "1,2";
 				WRAPPER_EXTENSION = app;
@@ -297,12 +317,12 @@
 		};
 		48C34CC314D920D50012AB8B /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 0170871C34BF449B965C8351 /* Pods.xcconfig */;
+			baseConfigurationReference = FD1D49A2BA9F61EBC02E70EB /* Pods.release.xcconfig */;
 			buildSettings = {
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "YIPopupTextViewDemo/YIPopupTextViewDemo-Prefix.pch";
 				INFOPLIST_FILE = "YIPopupTextViewDemo/YIPopupTextViewDemo-Info.plist";
-				IPHONEOS_DEPLOYMENT_TARGET = 5.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				TARGETED_DEVICE_FAMILY = "1,2";
 				WRAPPER_EXTENSION = app;

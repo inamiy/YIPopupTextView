@@ -1,6 +1,6 @@
 Pod::Spec.new do |s|
   s.name     = 'YIPopupTextView'
-  s.version  = '1.1.2'
+  s.version  = '1.1.3'
   s.license  = { :type => 'Beerware', :text => 'If we meet some day, and you think this stuff is worth it, you can buy me a beer in return.' }
   s.homepage = 'https://github.com/inamiy/YIPopupTextView'
   s.author   = { 'Yasuhiro Inami' => 'inamiy@gmail.com' }
@@ -9,7 +9,7 @@ Pod::Spec.new do |s|
   s.source   = { :git => 'https://github.com/inamiy/YIPopupTextView.git', :tag => "#{s.version}" }
   s.source_files = 'Classes/*.{h,m}'
   s.requires_arc = true
-  s.platform = :ios, '5.0'
+  s.platform = :ios, '8.0'
 
   s.requires_arc = true
 end

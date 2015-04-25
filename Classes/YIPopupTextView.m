@@ -238,6 +238,7 @@ typedef enum {
         self.autocapitalizationType = UITextAutocapitalizationTypeNone;
         self.layer.cornerRadius = 10;
         self.backgroundColor = [UIColor whiteColor];
+        self.contentMode =  UIViewContentModeRedraw;
         [_popupView addSubview:self];
         
         if (maxCount > 0) {
@@ -544,18 +545,16 @@ typedef enum {
     
     CGFloat topMargin = _topUIBarMargin;
     CGFloat bottomMargin = _bottomUIBarMargin;
-    
     CGFloat popupViewHeight = 0;
     
-#if defined(__IPHONE_7_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_7_0
-    
-    // automatically adjusts top/bottomUIBarMargin for iOS7 fullscreen size
+
     if (_viewController) {
         UINavigationBar* navBar = _viewController.navigationController.navigationBar;
         UIToolbar* toolbar = _viewController.navigationController.toolbar;
         UITabBar* tabBar = _viewController.tabBarController.tabBar;
-        
-        CGFloat statusBarHeight = (IS_PORTRAIT ? [UIApplication sharedApplication].statusBarFrame.size.height : [UIApplication sharedApplication].statusBarFrame.size.width);
+
+        CGFloat statusBarHeight = (IS_IOS_AT_LEAST(@"8.0") || IS_PORTRAIT ? [UIApplication sharedApplication].statusBarFrame.size.height : [UIApplication sharedApplication].statusBarFrame.size.width);
+
         CGFloat navBarHeight = (navBar && !navBar.hidden ? navBar.bounds.size.height : 0);
         CGFloat toolbarHeight = (toolbar && !toolbar.hidden ? toolbar.bounds.size.height : 0);
         CGFloat tabBarHeight = (tabBar && !tabBar.hidden ? tabBar.bounds.size.height : 0);
@@ -568,7 +567,7 @@ typedef enum {
         }
     }
     
-#endif
+
 
     if (notification) {
         NSDictionary* userInfo = [notification userInfo];
@@ -579,9 +578,9 @@ typedef enum {
         }
         
         CGPoint bgOrigin = [self.window convertPoint:CGPointZero fromView:_backgroundView];
-        
         UIInterfaceOrientation orientation = [UIApplication sharedApplication].statusBarOrientation;
-        
+
+
         switch (orientation) {
             case UIInterfaceOrientationPortrait:
                 popupViewHeight = keyboardRect.origin.y - bgOrigin.y - topMargin;
@@ -591,22 +590,32 @@ typedef enum {
                 break;
             case UIInterfaceOrientationLandscapeLeft:
                 // keyboard at portrait-right
-                popupViewHeight = keyboardRect.origin.x - bgOrigin.x - topMargin;
+
+                if IS_IOS_AT_LEAST(@"8.0") {
+                    popupViewHeight = keyboardRect.origin.y - bgOrigin.y - topMargin;
+                }
+                else {
+                    popupViewHeight = keyboardRect.origin.x - bgOrigin.x - topMargin;
+                }
                 break;
             case UIInterfaceOrientationLandscapeRight:
                 // keyboard at portrait-left
-                popupViewHeight = bgOrigin.x - keyboardRect.origin.x - keyboardRect.size.width - topMargin;
+                if IS_IOS_AT_LEAST(@"8.0") {
+                    popupViewHeight = keyboardRect.origin.y - bgOrigin.y - topMargin;
+                }
+                else {
+                    popupViewHeight = bgOrigin.x - keyboardRect.origin.x - keyboardRect.size.width - topMargin;
+                }
                 break;
             default:
                 break;
         }
-    }
-    else {
+    } else {
         popupViewHeight = _backgroundView.bounds.size.height;
     }
     
     popupViewHeight = MIN(popupViewHeight, _backgroundView.bounds.size.height-topMargin-bottomMargin);
-    
+
     CGRect frame = _backgroundView.bounds;
     frame.origin.y = topMargin;
     frame.size.height = popupViewHeight;
