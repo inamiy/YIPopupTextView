@@ -1,3 +1,6 @@
 platform :ios, '8.0'
+use_frameworks!
 
-pod 'YIPopupTextView', :path => '../'
+target 'YIPopupTextViewDemo' do
+  pod 'YIPopupTextView', :path => '../'
+end

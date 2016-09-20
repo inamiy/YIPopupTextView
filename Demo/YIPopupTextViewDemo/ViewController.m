@@ -135,16 +135,16 @@
     
     if (self.navigationController) {
         UINavigationController* naviC = [[UINavigationController alloc] initWithRootViewController:vc];
-        [self presentModalViewController:naviC animated:YES];
+        [self presentViewController:naviC animated:YES completion:nil];
     }
     else {
-        [self presentModalViewController:vc animated:YES];
+        [self presentViewController:vc animated:YES completion:nil];
     }
 }
 
 - (IBAction)handleDismissButton:(id)sender 
 {
-    [self dismissModalViewControllerAnimated:YES];
+    [self dismissViewControllerAnimated:YES completion:nil];
 }
 
 #pragma mark -
